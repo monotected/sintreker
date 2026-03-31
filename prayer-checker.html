@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Сова слушает молитву</title>
+<meta name="theme-color" content="#080300">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -16,6 +18,7 @@ body{
   background:#080300;color:var(--bone);
   font-family:'Crimson Text',serif;
   min-height:100vh;padding:20px 16px 50px;
+  -webkit-tap-highlight-color: transparent;
 }
 body::before{
   content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;
@@ -102,6 +105,7 @@ hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--
   text-transform:uppercase;cursor:pointer;text-align:center;transition:all .2s;
 }
 .prayer-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1);}
+.prayer-tab.locked{color:rgba(212,184,150,.2); border-color: rgba(100,100,100,.2); cursor: not-allowed;}
 
 .prayer-title{
   font-family:'Cinzel',serif;font-size:.75rem;
@@ -167,16 +171,23 @@ hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--
 }
 .recognized span{color:rgba(212,184,150,.8);}
 
+/* ── BEST SCORE ── */
+.best-score-row {
+  text-align: center; margin-bottom: 12px;
+  font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:1px;
+  color: rgba(201,168,76,.6); text-transform:uppercase;
+}
+
 /* ── BUTTONS ── */
 .btn-listen{
-  display:block;width:100%;padding:16px;
+  display:flex;width:100%;padding:16px;
   background:linear-gradient(135deg,#8b0000,#c0392b);
   border:none;border-radius:10px;
   color:#fff;font-family:'Cinzel',serif;
   font-size:.8rem;letter-spacing:3px;text-transform:uppercase;
   cursor:pointer;transition:all .2s;
   box-shadow:0 0 20px rgba(139,0,0,.3);
-  display:flex;align-items:center;justify-content:center;gap:10px;
+  align-items:center;justify-content:center;gap:10px;
 }
 .btn-listen:active{transform:scale(.97);}
 .btn-listen.listening{
@@ -262,7 +273,6 @@ hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--
         <circle cx="62" cy="48" r="13" fill="#330000" opacity=".8"/>
         <circle cx="38" cy="48" r="11" fill="#ffeecc"/>
         <circle cx="62" cy="48" r="11" fill="#ffeecc"/>
-        <!-- eye irises - change color by mood via JS -->
         <circle cx="38" cy="48" r="7" fill="#cc0000" id="irisL"/>
         <circle cx="62" cy="48" r="7" fill="#cc0000" id="irisR"/>
         <circle cx="38" cy="48" r="4" fill="#000" id="pupilL"/>
@@ -270,7 +280,6 @@ hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--
         <circle cx="40" cy="46" r="1.5" fill="white"/>
         <circle cx="64" cy="46" r="1.5" fill="white"/>
         <polygon points="50,54 44,62 56,62" fill="#c9a84c"/>
-        <!-- mouth changes by mood -->
         <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2.5" fill="none" id="owlMouth"/>
         <line x1="40" y1="122" x2="30" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
         <line x1="40" y1="122" x2="38" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
@@ -291,10 +300,8 @@ hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--
     <div class="prayer-selector" id="prayerSelector"></div>
     <div class="prayer-title" id="prayerTitle">Молитва Иисусова</div>
 
-    <!-- word-by-word highlighted text -->
     <div class="prayer-text" id="prayerWords"></div>
 
-    <!-- progress -->
     <div class="prog-wrap">
       <div class="prog-label">
         <span>Прогресс</span>
@@ -303,7 +310,6 @@ hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--
       <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
     </div>
 
-    <!-- scores -->
     <div class="score-row">
       <div class="score-box">
         <div class="score-num correct-score" id="scoreCorrect">0</div>
@@ -319,19 +325,20 @@ hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--
       </div>
     </div>
 
-    <!-- what owl heard -->
     <div class="recognized" id="recognized">
       Сова ещё ничего не слышала...
     </div>
 
-    <!-- result -->
+    <div class="best-score-row" id="bestScoreRow" style="display:none;">
+      Рекорд: <span id="bestScoreVal">—</span>
+    </div>
+
     <div class="result-banner" id="resultBanner">
       <span class="result-icon" id="resultIcon"></span>
       <div class="result-title" id="resultTitle"></div>
       <div class="result-detail" id="resultDetail"></div>
     </div>
 
-    <!-- main button -->
     <button class="btn-listen" id="btnListen" onclick="toggleListening()">
       <span class="btn-mic-icon">🎙️</span>
       <span id="btnText">Начать чтение</span>
@@ -352,16 +359,20 @@ hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--
 // ═══════════════════════════════════════════
 const PRAYERS = [
   {
-    id:'p1', name:'Иисусова',
+    id:'p1', name:'Иисусова', locked:false,
     text:'Господи Иисусе Христе Сыне Божий помилуй мя грешного',
   },
   {
-    id:'p2', name:'Отче наш',
+    id:'p2', name:'Отче наш', locked:false,
     text:'Отче наш иже еси на небесех да святится имя Твое да приидет Царствие Твое да будет воля Твоя яко на небеси и на земли хлеб наш насущный даждь нам днесь и остави нам долги наша якоже и мы оставляем должником нашим и не введи нас во искушение но избави нас от лукавого',
   },
   {
-    id:'p3', name:'Богородице',
+    id:'p3', name:'Богородице', locked:false,
     text:'Богородице Дево радуйся Благодатная Марие Господь с Тобою благословена Ты в женах и благословен плод чрева Твоего яко Спаса родила еси душ наших',
+  },
+  {
+    id:'p4', name:'Символ веры', locked:true,
+    text:'Верую во единаго Бога Отца Вседержителя Творца небу и земли видимым же всем и невидимым И во единаго Господа Иисуса Христа Сына Божия Единороднаго Иже от Отца рожденнаго прежде всех век Света от Света Бога истинна от Бога истинна рожденна несотворенна единосущна Отцу Имже вся быша Нас ради человек и нашего ради спасения сшедшаго с небес и воплотившагося от Духа Свята и Марии Девы и вочеловечшася Распятаго же за ны при Понтийстем Пилате и страдавша и погребенна И воскресшаго в третий день по Писанием И возшедшаго на небеса и седяща одесную Отца И паки грядущаго со славою судити живым и мертвым Егоже Царствию не будет конца И в Духа Святаго Господа Животворящаго Иже от Отца исходящаго Иже со Отцем и Сыном спокланяема и сславима глаголавшаго пророки Во едину Святую Соборную и Апостольскую Церковь Исповедую едино крещение во оставление грехов Чаю воскресения мертвых и жизни будущаго века Аминь'
   },
 ];
 
@@ -369,17 +380,73 @@ const PRAYERS = [
 //  STATE
 // ═══════════════════════════════════════════
 let currentPrayer = 0;
-let words = [];          // {text, norm, state:'pending'|'current'|'correct'|'wrong'}
-let wordIndex = 0;       // which word we expect next
+let words = [];          
+let wordIndex = 0;       
 let correctCount = 0;
 let wrongCount = 0;
 let listening = false;
 let recognition = null;
 let finalTranscript = '';
+let audioCtx = null;
 
 // ═══════════════════════════════════════════
-//  INIT
+//  SOUNDS (Web Audio API)
 // ═══════════════════════════════════════════
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playTone(freq, duration, type = 'sine', vol = 0.15) {
+  if(!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+
+function playCorrectSound() {
+  playTone(880, 0.15, 'sine', 0.12);
+  setTimeout(() => playTone(1100, 0.2, 'sine', 0.08), 80);
+}
+
+function playWrongSound() {
+  playTone(150, 0.3, 'sawtooth', 0.08);
+}
+
+function playFinishSound(isPass) {
+  if (isPass) {
+    playTone(660, 0.2, 'sine', 0.1);
+    setTimeout(() => playTone(880, 0.2, 'sine', 0.1), 150);
+    setTimeout(() => playTone(1100, 0.4, 'sine', 0.12), 300);
+  } else {
+    playTone(200, 0.5, 'square', 0.06);
+    setTimeout(() => playTone(150, 0.6, 'square', 0.06), 200);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  INIT & LOCAL STORAGE
+// ═══════════════════════════════════════════
+function getBest(id) { return parseInt(localStorage.getItem('owl_best_'+id) || '0'); }
+function setBest(id, val) { 
+  if(val > getBest(id)) {
+    localStorage.setItem('owl_best_'+id, val);
+    return true; // new record
+  }
+  return false;
+}
+
 function normalize(w) {
   return w.toLowerCase()
     .replace(/[^а-яёa-z]/g,'')
@@ -401,10 +468,24 @@ function loadPrayer(idx) {
   renderWords(); renderScores(); renderProgress();
   document.getElementById('recognized').innerHTML = 'Сова ещё ничего не слышала...';
   hideResult();
+  
+  // Show best score
+  const best = getBest(p.id);
+  const bestRow = document.getElementById('bestScoreRow');
+  if (best > 0) {
+    bestRow.style.display = 'block';
+    document.getElementById('bestScoreVal').textContent = best + '%';
+  } else {
+    bestRow.style.display = 'none';
+  }
+
   setOwlMood('idle','Выбрана молитва «'+p.name+'». Нажми кнопку и читай вслух.');
   stopListening();
   updateBtn(false);
   document.getElementById('progFill').classList.remove('green');
+
+  // Subtle fix: highlight first word immediately
+  if (words.length > 0) setWordState(0, 'current');
 
   // highlight selector
   document.querySelectorAll('.prayer-tab').forEach((t,i)=>{
@@ -414,9 +495,25 @@ function loadPrayer(idx) {
 
 function buildSelector() {
   const sel = document.getElementById('prayerSelector');
-  sel.innerHTML = PRAYERS.map((p,i)=>
-    `<div class="prayer-tab${i===0?' active':''}" onclick="loadPrayer(${i})">${p.name}</div>`
-  ).join('');
+  sel.innerHTML = PRAYERS.map((p,i)=>{
+    const isLocked = p.locked && !isUnlocked(i);
+    const lockIcon = isLocked ? ' 🔒' : '';
+    return `<div class="prayer-tab${i===0?' active':''}${isLocked?' locked':''}" onclick="selectPrayer(${i})">${p.name}${lockIcon}</div>`;
+  }).join('');
+}
+
+function isUnlocked(idx) {
+  // Symbol of faith unlocks if "Otche nash" has >= 80% record
+  if (idx === 3) return getBest('p2') >= 80;
+  return true;
+}
+
+function selectPrayer(idx) {
+  if (PRAYERS[idx].locked && !isUnlocked(idx)) {
+    setOwlMood('angry','Эта молитва заперта. Прочитай «Отче наш» на 80%, чтобы открыть её.');
+    return;
+  }
+  loadPrayer(idx);
 }
 
 // ═══════════════════════════════════════════
@@ -439,7 +536,7 @@ function renderScores() {
 
 function renderProgress() {
   const total = words.length;
-  const done  = correctCount; // only correct words count
+  const done  = correctCount; 
   const pct   = total > 0 ? Math.round(done/total*100) : 0;
   document.getElementById('progFill').style.width = pct+'%';
   document.getElementById('progText').textContent = done+' / '+total+' слов';
@@ -485,7 +582,7 @@ function checkSpeechSupport() {
   if(!SR) {
     document.getElementById('noSupport').style.display = 'block';
     document.getElementById('btnListen').disabled = true;
-    document.getElementById('btnListen').textContent = '⚠️ Нет поддержки браузера';
+    document.getElementById('btnListen').innerHTML = '⚠️ Нет поддержки браузера';
     return false;
   }
   return true;
@@ -518,7 +615,6 @@ function setupRecognition() {
         interim += res[0].transcript;
       }
     }
-    // show what owl hears in real time
     const rec = document.getElementById('recognized');
     rec.innerHTML = '<span>'+(finalTranscript+' '+interim).trim()+'</span>';
   };
@@ -526,7 +622,6 @@ function setupRecognition() {
   recognition.onerror = (e) => {
     if(e.error === 'not-allowed') {
       setOwlMood('angry','Доступ к микрофону запрещён! Разреши в настройках браузера.');
-      showError('Нет доступа к микрофону. Проверь настройки Chrome.');
     } else if(e.error === 'no-speech') {
       setOwlMood('angry','Я ничего не слышу. Говори громче!');
     } else {
@@ -535,57 +630,59 @@ function setupRecognition() {
     stopListening();
   };
 
+  let restartCount = 0;
+  const MAX_RESTARTS = 5;
+  
   recognition.onend = () => {
     if(listening) {
-      // auto-restart if we didn't stop manually (Android cuts off)
-      try { recognition.start(); } catch(err){}
+      if (restartCount < MAX_RESTARTS) {
+        restartCount++;
+        try { recognition.start(); } catch(err){}
+      } else {
+        setOwlMood('angry','Микрофон сломался или заблокирован. Перезагрузи страницу.');
+        stopListening();
+      }
+    } else {
+      restartCount = 0; // reset if manual stop
     }
   };
 }
 
 function processTranscript(text) {
-  // Get all recognized words from this chunk
   const spokenWords = text.trim().split(/\s+/).map(normalize).filter(Boolean);
 
   for(const spoken of spokenWords) {
     if(wordIndex >= words.length) break;
 
-    // Mark current word as "current" highlight
     setWordState(wordIndex, 'current');
-
-    // Try to match: exact match or fuzzy (within 2 chars edit distance)
     const expected = words[wordIndex].norm;
-    const match = spoken === expected || editDistance(spoken, expected) <= 2;
+    
+    // Dynamic threshold: strict for short words (1-3 chars), relaxed for long
+    const maxDistance = expected.length <= 3 ? 1 : 2;
+    const match = spoken === expected || editDistance(spoken, expected) <= maxDistance;
 
     if(match) {
       setWordState(wordIndex, 'correct');
       correctCount++;
       wordIndex++;
+      playCorrectSound();
       spawnCorrect();
-
-      // look-ahead: skip current
       setWordState(wordIndex, 'current');
-
-      // check complete
-      if(wordIndex >= words.length) {
-        finishPrayer();
-        return;
-      }
+      if(wordIndex >= words.length){ finishPrayer(); return; }
     } else {
-      // wrong word — give visual feedback but also try to re-sync
-      // (user might have skipped a word)
       setWordState(wordIndex, 'wrong');
       wrongCount++;
+      playWrongSound();
 
-      // try to find this spoken word ahead (skip detection)
       let found = -1;
       for(let j = wordIndex+1; j < Math.min(wordIndex+4, words.length); j++) {
-        if(spoken === words[j].norm || editDistance(spoken, words[j].norm) <= 1) {
+        const lookMaxDist = words[j].norm.length <= 3 ? 1 : 2;
+        if(spoken === words[j].norm || editDistance(spoken, words[j].norm) <= lookMaxDist) {
           found = j; break;
         }
       }
+      
       if(found !== -1) {
-        // mark skipped words as wrong
         for(let j = wordIndex; j < found; j++) setWordState(j,'wrong');
         wordIndex = found;
         setWordState(wordIndex, 'correct');
@@ -593,15 +690,14 @@ function processTranscript(text) {
         setWordState(wordIndex, 'current');
         if(wordIndex >= words.length){ finishPrayer(); return; }
       } else {
-        wordIndex++; // advance anyway
+        wordIndex++; 
         setWordState(wordIndex, 'current');
       }
     }
-
     renderScores(); renderProgress();
   }
 
-  // Dynamic owl reactions
+  // Dynamic mood
   const pct = words.length > 0 ? correctCount/words.length : 0;
   if(pct > .7 && listening) {
     setOwlMood('listen','Хорошо читаешь! Продолжай...');
@@ -610,7 +706,7 @@ function processTranscript(text) {
   }
 }
 
-// Levenshtein distance for fuzzy matching
+// Levenshtein distance
 function editDistance(a, b) {
   const m=a.length, n=b.length;
   const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
@@ -626,6 +722,14 @@ function finishPrayer() {
 
   const total = words.length;
   const pct   = Math.round(correctCount/total*100);
+  const p = PRAYERS[currentPrayer];
+  const best = getBest(p.id);
+  const isNewRecord = setBest(p.id, pct);
+  
+  // Update Best Score UI
+  document.getElementById('bestScoreRow').style.display = 'block';
+  document.getElementById('bestScoreVal').textContent = Math.max(pct, best) + '%';
+
   const banner = document.getElementById('resultBanner');
   banner.classList.remove('pass','fail');
 
@@ -634,19 +738,37 @@ function finishPrayer() {
     document.getElementById('resultIcon').textContent = '✝';
     document.getElementById('resultTitle').textContent = 'Молитва засчитана';
     document.getElementById('resultTitle').className = 'result-title pass';
-    document.getElementById('resultDetail').textContent =
-      'Точность: '+pct+'%. Сова одобряет. '+
-      (pct===100?'Идеальное чтение!':pct>=90?'Почти безупречно.':'Хорошая работа.');
-    setOwlMood('happy','✝ Молитва принята! Точность '+pct+'%. Сова довольна.');
+    
+    let detail = 'Точность: '+pct+'%. ';
+    if (isNewRecord && best > 0) detail += 'Новый рекорд! Сова впечатлена. ';
+    else if (pct === 100) detail += 'Идеальное чтение! ';
+    else if (pct >= 90) detail += 'Почти безупречно. ';
+    
+    document.getElementById('resultDetail').textContent = detail;
+    setOwlMood('happy','✝ Молитва принята! Точность '+pct+'%.');
+    playFinishSound(true);
     spawnParticles(8);
+    
+    // Unlock logic
+    if (currentPrayer === 1 && pct >= 80 && PRAYERS[3].locked) {
+      PRAYERS[3].locked = false;
+      buildSelector(); // refresh tabs
+      setTimeout(() => setOwlMood('happy','Открыт «Символ веры». Ты достоин.'), 2000);
+    }
+
   } else {
     banner.classList.add('show','fail');
     document.getElementById('resultIcon').textContent = '😤';
     document.getElementById('resultTitle').textContent = 'Недостаточно хорошо';
     document.getElementById('resultTitle').className = 'result-title fail';
-    document.getElementById('resultDetail').textContent =
-      'Точность: '+pct+'%. Нужно минимум 70%. Читай ещё раз.';
-    setOwlMood('angry','ХУХ. Точность '+pct+'% — это не молитва, это позор. Заново.');
+    
+    let detail = 'Точность: '+pct+'%. Нужно минимум 70%. ';
+    if (best > pct && best >= 70) detail += 'В прошлый раз было '+best+'%. Ты можешь лучше!';
+    else detail += 'Читай ещё раз.';
+    
+    document.getElementById('resultDetail').textContent = detail;
+    setOwlMood('angry','ХУХ. Точность '+pct+'% — это позор. Заново.');
+    playFinishSound(false);
   }
 }
 
@@ -655,6 +777,8 @@ function finishPrayer() {
 // ═══════════════════════════════════════════
 function toggleListening() {
   if(!checkSpeechSupport()) return;
+  initAudio(); // Init audio on first user click
+  
   if(!recognition) setupRecognition();
 
   if(listening) {
@@ -662,7 +786,6 @@ function toggleListening() {
     setOwlMood('idle','Остановлено. Нажми снова чтобы продолжить.');
   } else {
     hideResult();
-    // if starting fresh
     if(wordIndex === 0) {
       words.forEach((_,i) => setWordState(i,'pending'));
       correctCount=0; wrongCount=0; finalTranscript='';
@@ -695,11 +818,6 @@ function resetPrayer() {
 
 function hideResult() {
   document.getElementById('resultBanner').classList.remove('show','pass','fail');
-}
-
-function showError(msg) {
-  document.getElementById('bubble').textContent = msg;
-  document.getElementById('bubble').className = 'bubble bad';
 }
 
 // ═══════════════════════════════════════════
