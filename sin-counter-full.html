@@ -25,6 +25,8 @@ body::before {
   animation:hellglow 3s ease-in-out infinite alternate;
 }
 @keyframes hellglow { from{opacity:.5} to{opacity:1} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.shake { animation: shake 0.2s ease-in-out; }
 
 .container { max-width:480px; margin:0 auto; padding:16px 14px 100px; position:relative; z-index:1; }
 
@@ -44,13 +46,13 @@ header { text-align:center; padding:20px 0 10px; }
 .date-line { font-family:'Cinzel',serif; font-size:.65rem; color:rgba(212,184,150,.4); margin-top:5px; letter-spacing:2px; }
 hr.orn { border:none; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); margin:12px 0; opacity:.4; }
 
-/* ── UPDATE BANNER (fake "update available") ───── */
+/* ── UPDATE BANNER ───── */
 .update-banner {
   background:linear-gradient(135deg,#0d0500,#1a0500);
   border:1px solid var(--blood); border-radius:8px;
   padding:10px 14px; margin-bottom:14px;
   display:flex; align-items:center; gap:10px;
-  animation:pulse-border 2s infinite;
+  animation:pulse-border 2s infinite; cursor:pointer;
 }
 @keyframes pulse-border {
   0%,100%{border-color:rgba(139,0,0,.4)} 50%{border-color:rgba(200,0,0,.9)}
@@ -270,8 +272,9 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
 .prayer-text { font-style:italic; font-size:.86rem; line-height:1.55; color:rgba(212,184,150,.82); }
 .prayer-name { font-family:'Cinzel',serif; font-size:.58rem; color:var(--gold); letter-spacing:2px; margin-top:7px; opacity:.6; }
 .prayer-bonus { font-family:'Cinzel',serif; font-size:.55rem; color:#4a9a4a; margin-top:4px; }
+.prayer-timer { font-family:'UnifrakturMaguntia',cursive; font-size:1.5rem; color:var(--gold); text-align:center; margin:8px 0; text-shadow:0 0 10px rgba(201,168,76,.4); }
 .prayer-progress { height:2px; background:rgba(201,168,76,.1); border-radius:2px; margin-top:8px; overflow:hidden; }
-.prayer-progress-fill { height:100%; width:0%; background:linear-gradient(to right,var(--gold),#ffdd88); border-radius:2px; transition:width .3s linear; }
+.prayer-progress-fill { height:100%; width:0%; background:linear-gradient(to right,var(--gold),#ffdd88); border-radius:2px; transition:width 1s linear; }
 .prayer-card.done .prayer-progress-fill { width:100%!important; background:#4a9a4a; }
 .btn-read {
   display:block; width:100%; margin-top:8px; padding:7px;
@@ -404,8 +407,8 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
 }
 @keyframes btn-pulse { 0%,100%{box-shadow:0 0 20px rgba(201,168,76,.4)} 50%{box-shadow:0 0 40px rgba(201,168,76,.7)} }
 .btn-ind-skip {
-  background:none; border:none; color:rgba(212,184,150,.25);
-  font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:2px;
+  background:none; border:none; color:rgba(212,184,150,.15);
+  font-family:'Cinzel',serif; font-size:.4rem; letter-spacing:2px;
   cursor:pointer; padding:8px; text-transform:uppercase;
   /* intentionally tiny and hard to see */
 }
@@ -466,11 +469,11 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
 <div class="container" id="mainContainer">
 
   <!-- UPDATE BANNER -->
-  <div class="update-banner" id="updateBanner">
+  <div class="update-banner" id="updateBanner" onclick="this.style.display='none'">
     <div class="update-dot"></div>
     <div>
-      <div class="update-text">🔥 Обновление 1.0 → доступно!</div>
-      <div class="update-ver">Новые функции разблокированы</div>
+      <div class="update-text">🔥 Обновление 1.1 → доступно!</div>
+      <div class="update-ver">Нажми, чтобы закрыть (или купи VIP)</div>
     </div>
   </div>
 
@@ -523,14 +526,14 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
         <circle cx="62" cy="48" r="13" fill="#330000" opacity=".8"/>
         <circle cx="38" cy="48" r="11" fill="#ffeecc"/>
         <circle cx="62" cy="48" r="11" fill="#ffeecc"/>
-        <circle cx="38" cy="48" r="7" fill="#cc0000"/>
-        <circle cx="62" cy="48" r="7" fill="#cc0000"/>
+        <circle cx="38" cy="48" r="7" fill="#cc0000" id="irisL"/>
+        <circle cx="62" cy="48" r="7" fill="#cc0000" id="irisR"/>
         <circle cx="38" cy="48" r="4" fill="#000"/>
         <circle cx="62" cy="48" r="4" fill="#000"/>
         <circle cx="40" cy="46" r="1.5" fill="white"/>
         <circle cx="64" cy="46" r="1.5" fill="white"/>
         <polygon points="50,54 44,62 56,62" fill="#c9a84c"/>
-        <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none"/>
+        <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none" id="owlMouth"/>
         <line x1="40" y1="122" x2="30" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
         <line x1="40" y1="122" x2="38" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
         <line x1="40" y1="122" x2="46" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
@@ -557,7 +560,7 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
 
   <!-- CHART -->
   <div class="chart-section">
-    <div class="section-title">☩ Путь к Аду ☩</div>
+    <div class="section-title">☫ Путь к Аду ☫</div>
     <div class="hell-meter">
       <svg width="160" height="160" viewBox="0 0 160 160">
         <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(139,0,0,.2)" stroke-width="12"/>
@@ -615,7 +618,7 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
     <span class="nav-icon">📜</span>
     <span class="nav-label">Индульгенции</span>
   </button>
-  <button class="nav-btn">
+  <button class="nav-btn" onclick="scrollToEl('lbSection')">
     <span class="nav-icon">🏆</span>
     <span class="nav-label">Рейтинг</span>
   </button>
@@ -629,7 +632,6 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
       <div class="shop-subtitle">Инвестируй в спасение души</div>
     </div>
     <div class="shop-body">
-
       <div class="shop-tier silver-tier" onclick="purchase('silver')">
         <div class="tier-header">
           <span class="tier-name" style="color:var(--silver)">🥈 Серебряный</span>
@@ -643,7 +645,6 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
         </ul>
         <button class="btn-buy btn-buy-silver">Получить Серебро</button>
       </div>
-
       <div class="shop-tier gold-tier" onclick="purchase('gold')">
         <div class="tier-header">
           <span class="tier-name" style="color:var(--gold2)">🥇 Золотой</span>
@@ -655,11 +656,9 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
           <li>8 эксклюзивных молитв + редкие</li>
           <li>Индульгенции со скидкой 20%</li>
           <li>Золотой значок в рейтинге</li>
-          <li>Приоритетное место в Рейтинге Духовности</li>
         </ul>
         <button class="btn-buy btn-buy-gold">Получить Золото</button>
       </div>
-
       <div class="shop-tier plat-tier" onclick="purchase('plat')">
         <div class="tier-header">
           <span class="tier-name" style="color:var(--plat)">💎 Платиновый</span>
@@ -669,13 +668,10 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
           <li>Неограниченные малые грехи</li>
           <li>Благодать ×1.5 — ускоренное прощение</li>
           <li>Все молитвы разблокированы</li>
-          <li>Ежедневная персональная индульгенция</li>
-          <li>Эксклюзивный аватар совы (Платиновая Сова™)</li>
           <li>Без рекламы навсегда*</li>
         </ul>
         <button class="btn-buy btn-buy-plat">Получить Платину</button>
       </div>
-
       <div class="shop-tier vip-tier" onclick="purchase('vip')">
         <div class="tier-header">
           <span class="tier-name" style="color:var(--vip)">👑 VIP Blessed</span>
@@ -685,17 +681,14 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
           <li>Все грехи прощаются в конце дня автоматически</li>
           <li>Благодать ×3 — максимальное ускорение спасения</li>
           <li>Персональный ангел-куратор (AI чат)</li>
-          <li>Еженедельный отчёт духовного прогресса</li>
           <li>VIP рейтинг — ты всегда в топ-3</li>
-          <li>Поддержка 24/7 от братии монастыря**</li>
           <li>NFT-сертификат "Достойный Прощения"</li>
         </ul>
         <div style="font-family:'Cinzel',serif;font-size:.45rem;color:rgba(212,184,150,.25);margin-top:8px">
-          * кроме "специальных предложений" ** ответ в течение 7-14 дней
+          * кроме "специальных предложений"
         </div>
         <button class="btn-buy btn-buy-vip">✨ Стать VIP ✨</button>
       </div>
-
     </div>
     <button class="modal-close" onclick="closeShop()">✕ Остаться грешником (бесплатно)</button>
   </div>
@@ -706,7 +699,6 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
   <div class="ind-cross">✝</div>
   <div class="ind-title">Индульгенция</div>
   <div class="ind-sub">Специальное предложение — только сейчас</div>
-
   <div class="ind-offer">
     <div class="ind-offer-name" id="indName">Малая Индульгенция</div>
     <div class="ind-offer-desc" id="indDesc">Прощает до 5 грехов немедленно. Действует 24 часа. Одобрено Совой.</div>
@@ -714,8 +706,7 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
     <div class="ind-price-sub" id="indPriceSub">разовый платёж • мгновенное прощение</div>
     <button class="btn-ind-buy" onclick="buyIndulgence()">🙏 КУПИТЬ ПРОЩЕНИЕ</button>
   </div>
-
-  <div class="ind-timer" id="indTimer">⏳ Предложение истекает через: <span id="indCountdown">05:00</span></div>
+  <div class="ind-timer" id="indTimer">⏳ Предложение истекает через: <span id="indCountdown">00:20</span></div>
   <button class="btn-ind-skip" id="skipBtn" onclick="closeIndulgence()" style="display:none">
     продолжить грешить бесплатно
   </button>
@@ -735,14 +726,14 @@ hr.orn { border:none; height:1px; background:linear-gradient(to right,transparen
       <polygon points="72,28 78,8 64,22" fill="#0d1800"/>
       <circle cx="38" cy="48" r="11" fill="#ffeecc"/>
       <circle cx="62" cy="48" r="11" fill="#ffeecc"/>
-      <circle cx="38" cy="48" r="7" fill="#cc0000"/>
-      <circle cx="62" cy="48" r="7" fill="#cc0000"/>
+      <circle cx="38" cy="48" r="7" fill="#cc0000" id="popupIrisL"/>
+      <circle cx="62" cy="48" r="7" fill="#cc0000" id="popupIrisR"/>
       <circle cx="38" cy="48" r="4" fill="#000"/>
       <circle cx="62" cy="48" r="4" fill="#000"/>
       <circle cx="40" cy="46" r="1.5" fill="white"/>
       <circle cx="64" cy="46" r="1.5" fill="white"/>
       <polygon points="50,54 44,62 56,62" fill="#c9a84c"/>
-      <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none"/>
+      <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none" id="popupMouth"/>
       <path d="M46,88 L54,88 M50,84 L50,96" stroke="#8b0000" stroke-width="2.5" opacity=".7"/>
     </svg>
   </div>
@@ -788,12 +779,11 @@ const QUESTS = [
   {id:'q4', icon:'📿', name:'Прочти молитву 3×',  target:3, key:'prayCount', reward:'Индульгенция'},
 ];
 
-const LEADERBOARD = [
-  {rank:1, avatar:'😇', name:'Иван П.',       score:9840, badge:'GOLD'},
-  {rank:2, avatar:'🙏', name:'Мария С.',      score:8120, badge:'PLAT'},
-  {rank:3, avatar:'😈', name:'Ты',            score:0,    badge:'FREE', isYou:true},
-  {rank:4, avatar:'👼', name:'Николай В.',    score:7350, badge:'SILVER'},
-  {rank:5, avatar:'🕊️', name:'Анна К.',       score:6800, badge:'GOLD'},
+const BOT_LEADERBOARD = [
+  {avatar:'😇', name:'Иван П.',       score:9840, badge:'GOLD'},
+  {avatar:'🙏', name:'Мария С.',      score:8120, badge:'PLAT'},
+  {avatar:'👼', name:'Николай В.',    score:7350, badge:'SILVER'},
+  {avatar:'🕊️', name:'Анна К.',       score:6800, badge:'GOLD'},
 ];
 
 const IND_OFFERS = [
@@ -808,7 +798,12 @@ const IND_OFFERS = [
 // ═══════════════════════════════════════════════════
 const today = new Date().toDateString();
 let counts = JSON.parse(localStorage.getItem('sins_counts') || '{}');
-if (localStorage.getItem('sins_date') !== today) { counts = {}; localStorage.setItem('sins_date', today); }
+let freeSinsUsed = parseInt(localStorage.getItem('freeSinsUsed') || '0');
+if (localStorage.getItem('sins_date') !== today) { 
+  counts = {}; 
+  freeSinsUsed = 0;
+  localStorage.setItem('sins_date', today); 
+}
 SINS.forEach(s => { if (!counts[s.id]) counts[s.id] = 0; });
 
 let tier     = localStorage.getItem('user_tier') || 'free';
@@ -821,17 +816,46 @@ QUESTS.forEach(q => { if (!questProg[q.id]) questProg[q.id] = 0; });
 
 let activeTimer = null;
 let indTimer = null;
-let indSkipTimeout = null;
 let popupTimeout = null;
 let indCurrent = 0;
+let audioCtx = null;
 
 function save() {
   localStorage.setItem('sins_counts', JSON.stringify(counts));
+  localStorage.setItem('freeSinsUsed', freeSinsUsed);
   localStorage.setItem('prayer_state2', JSON.stringify(pState));
   localStorage.setItem('quest_prog', JSON.stringify(questProg));
   localStorage.setItem('user_xp', xp);
   localStorage.setItem('user_tier', tier);
 }
+
+// ═══════════════════════════════════════════════════
+//  AUDIO ENGINE
+// ═══════════════════════════════════════════════════
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playTone(freq, duration, type = 'sine', vol = 0.15) {
+  if(!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+
+function playSinSound() { playTone(120, 0.4, 'sawtooth', 0.08); }
+function playAbsolveSound() { playTone(800, 0.15); setTimeout(()=>playTone(1000, 0.2), 100); }
+function playBuySound() { playTone(600, 0.1, 'square', 0.05); playTone(900, 0.2, 'square', 0.05); }
 
 // ═══════════════════════════════════════════════════
 //  HELPERS
@@ -848,7 +872,7 @@ function tierUnlocked(t) {
   const order = ['free','silver','gold','plat','vip'];
   return order.indexOf(tier) >= order.indexOf(t);
 }
-function rand(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+function rand(arr) { return arr[Math.floor(Math.random()*arr.length); }
 
 // ═══════════════════════════════════════════════════
 //  RENDER
@@ -872,12 +896,11 @@ function renderXP() {
   document.getElementById('xpNum').textContent = xp + ' XP';
   document.getElementById('xpBar').style.width = Math.min(100, (xp % 100)) + '%';
   document.getElementById('streakNum').textContent = streak;
-  LEADERBOARD[2].score = xp;
 }
 
 function renderSins() {
   const grid = document.getElementById('sinsGrid');
-  const freeSinsLeft = TIERS[tier].freeSins - (parseInt(localStorage.getItem('freeSinsUsed')||'0'));
+  const freeSinsLeft = Math.max(0, TIERS[tier].freeSins - freeSinsUsed);
   grid.innerHTML = '';
   SINS.forEach((sin, i) => {
     const showFreeBadge = freeSinsLeft > 0 && i === 0 && tier !== 'free';
@@ -938,9 +961,11 @@ function renderQuests() {
 }
 
 function renderLeaderboard() {
-  LEADERBOARD[2].score = xp;
-  LEADERBOARD.sort((a,b)=> a.isYou ? 0 : b.score-a.score);
-  document.getElementById('lbList').innerHTML = LEADERBOARD.map((u,i)=>{
+  // Combine bots and user
+  let lb = [...BOT_LEADERBOARD, {avatar:'😈', name:'Ты', score: xp, badge: tier.toUpperCase(), isYou:true}];
+  lb.sort((a,b) => b.score - a.score);
+  
+  document.getElementById('lbList').innerHTML = lb.map((u,i)=>{
     const rank = i+1;
     return `<div class="lb-item">
       <div class="lb-rank ${rank===1?'gold-rank':''}">${rank}</div>
@@ -981,8 +1006,9 @@ function renderPrayers() {
       <div class="prayer-text">${p.text}</div>
       <div class="prayer-name">— ${p.name}</div>
       ${p.bonus?`<div class="prayer-bonus">✦ ${p.bonus} (×${TIERS[tier].bonus} с вашим тарифом)</div>`:''}
+      <div class="prayer-timer" id="ptimer-${p.id}" style="display:${state==='reading'?'block':'none'}"></div>
       <div class="prayer-progress"><div class="prayer-progress-fill" id="pprog-${p.id}"></div></div>
-      <button class="btn-read" onclick="startPrayer('${p.id}')" ${state==='reading'?'disabled':''}>
+      <button class="btn-read" onclick="startPrayer('${p.id}')" ${state!=='idle'?'disabled':''}>
         ${state==='done'?'✓ Прочитано':state==='reading'?'Читаю...':'Читать под надзором совы'}
       </button>
     </div>`;
@@ -999,29 +1025,50 @@ function renderAll() {
 // ═══════════════════════════════════════════════════
 function changeSin(id, delta, e) {
   e.stopPropagation();
-  counts[id] = Math.max(0,(counts[id]||0)+delta);
-  document.getElementById('cnt-'+id).textContent = counts[id];
-  if(delta>0) {
-    document.getElementById('card-'+id).classList.add('flash');
-    setTimeout(()=>document.getElementById('card-'+id).classList.remove('flash'),300);
-    spawnParticles(3);
-    setOwlMood('angry', rand(['...ещё один. Записано.','ХУХ. Ты серьёзно?','Дьявол аплодирует.','Ад расширяется ради тебя.','Купи индульгенцию. Тебе нужно.']));
-    showPopup(rand(['Грех зафиксирован. Сова недовольна.','Ещё один? Молитвы ждут.','Это будет стоить тебе... или денег.']));
-
-    // maybe show indulgence ad
-    if(tier==='free' && getTotal()>0 && getTotal()%5===0) {
-      setTimeout(()=>showIndulgence(), 1500);
+  initAudio();
+  
+  if(delta > 0) {
+    const freeSinsLeft = Math.max(0, TIERS[tier].freeSins - freeSinsUsed);
+    
+    if(freeSinsLeft > 0) {
+      freeSinsUsed++;
+      document.getElementById('card-'+id).classList.add('flash');
+      setTimeout(()=>document.getElementById('card-'+id).classList.remove('flash'),300);
+      playAbsolveSound();
+      setOwlMood('happy', 'Прощено по подписке. Осталось '+(TIERS[tier].freeSins - freeSinsUsed)+' бесплатных.');
+      showPopup('✦ Грех списан в рамках вашего тарифа ✦');
+    } else {
+      counts[id]++;
+      document.getElementById('card-'+id).classList.add('flash');
+      setTimeout(()=>document.getElementById('card-'+id).classList.remove('flash'),300);
+      document.getElementById('mainContainer').classList.add('shake');
+      setTimeout(()=>document.getElementById('mainContainer').classList.remove('shake'), 200);
+      playSinSound();
+      spawnParticles(3);
+      setOwlMood('angry', rand(['...ещё один. Записано.','ХУХ. Ты серьёзно?','Дьявол аплодирует.','Ад расширяется ради тебя.','Купи индульгенцию. Тебе нужно.']));
+      showPopup(rand(['Грех зафиксирован. Сова недовольна.','Ещё один? Молитвы ждут.','Это будет стоить тебе... или денег.']));
+      
+      // Trigger ad every 5 sins
+      if(tier==='free' && getTotal()>0 && getTotal()%5===0) {
+        setTimeout(()=>showIndulgence(), 1500);
+      }
     }
     questProg.sinTotal = getTotal();
-    save();
   } else {
-    save();
+    if (counts[id] > 0) {
+      counts[id]--;
+      playAbsolveSound();
+    }
   }
-  renderTotal(); renderChart(); renderQuests(); renderLeaderboard();
+  
+  document.getElementById('cnt-'+id).textContent = counts[id];
+  save();
+  renderTotal(); renderChart(); renderQuests(); renderLeaderboard(); renderSins();
 }
 
 function startPrayer(id) {
   if(pState[id]==='done') return;
+  initAudio();
   if(activeTimer) { clearInterval(activeTimer.interval); activeTimer=null; }
   pState[id]='reading'; save(); renderPrayers();
   const prayer = PRAYERS_DATA.find(p=>p.id===id);
@@ -1029,17 +1076,27 @@ function startPrayer(id) {
   let elapsed=0;
   setOwlMood('idle', rand(['Читай. Я считаю.','Начато. Не останавливайся.','Молитва начата. Сова наблюдает.']));
   showPopup('Читай внимательно. Я засеку время.');
+  
+  const timerEl = document.getElementById('ptimer-'+id);
+  timerEl.textContent = total + 's';
+  
   const interval = setInterval(()=>{
     elapsed++;
+    const remaining = total - elapsed;
+    if(timerEl) timerEl.textContent = remaining + 's';
+    
     const pct = Math.min(100,(elapsed/total)*100);
     const fill = document.getElementById('pprog-'+id);
     if(fill) fill.style.width = pct+'%';
+    
     if(elapsed>=total) {
       clearInterval(interval); activeTimer=null;
+      if(timerEl) timerEl.style.display = 'none';
       pState[id]='done';
       xp += Math.round(prayer.xp * TIERS[tier].bonus);
       questProg.prayCount = (questProg.prayCount||0)+1;
       save(); renderPrayers(); renderXP(); renderQuests(); renderLeaderboard();
+      playAbsolveSound();
       setOwlMood('happy', rand(['Засчитано. Может быть.','Небеса слышали.','Хух. Принято.','Неплохо. Осталось ещё.']));
       showPopup(`+${Math.round(prayer.xp * TIERS[tier].bonus)} XP духовности ✦`);
       spawnParticles(2);
@@ -1055,6 +1112,8 @@ function openShop() { document.getElementById('shopModal').classList.add('show')
 function closeShop(){ document.getElementById('shopModal').classList.remove('show'); }
 
 function purchase(t) {
+  initAudio();
+  playBuySound();
   tier = t; save();
   closeShop();
   renderAll();
@@ -1073,6 +1132,8 @@ function purchase(t) {
 //  INDULGENCE
 // ═══════════════════════════════════════════════════
 function showIndulgence() {
+  if(tier !== 'free') return; // No ads for premiums
+  
   indCurrent = Math.floor(Math.random()*IND_OFFERS.length);
   const offer = IND_OFFERS[indCurrent];
   document.getElementById('indName').textContent    = offer.name;
@@ -1085,7 +1146,7 @@ function showIndulgence() {
   const screen = document.getElementById('indulgenceScreen');
   screen.classList.add('show');
 
-  let secs = 5 + Math.floor(Math.random()*10); // 5-15s before skip appears
+  let secs = 20; // 20 seconds of pure dark pattern torture
   let countdown = secs;
   document.getElementById('indCountdown').textContent = '0'+Math.floor(countdown/60)+':'+String(countdown%60).padStart(2,'0');
 
@@ -1098,6 +1159,7 @@ function showIndulgence() {
 }
 
 function buyIndulgence() {
+  initAudio(); playBuySound();
   closeIndulgence();
   const total = getTotal();
   if(total>0) {
@@ -1113,16 +1175,33 @@ function buyIndulgence() {
 function closeIndulgence() {
   clearInterval(indTimer);
   document.getElementById('indulgenceScreen').classList.remove('show');
+  setOwlMood('angry', 'Жадность — тоже грех. Я записала.');
 }
 
 // ═══════════════════════════════════════════════════
-//  OWL
+//  OWL DYNAMICS
 // ═══════════════════════════════════════════════════
+const MOUTHS = { idle:'M40,68 Q50,62 60,68', angry:'M40,70 Q50,65 60,70', happy:'M40,64 Q50,72 60,64' };
+const IRIS = { idle:'#cc0000', angry:'#ff0000', happy:'#00cc00' };
+
 function setOwlMood(mood, text) {
   const svg = document.getElementById('owlSvg');
   svg.className.baseVal = 'owl-svg ' + mood;
+  
+  // Update main owl
+  document.getElementById('owlMouth').setAttribute('d', MOUTHS[mood]||MOUTHS.idle);
+  const c = IRIS[mood]||'#cc0000';
+  document.getElementById('irisL').setAttribute('fill',c);
+  document.getElementById('irisR').setAttribute('fill',c);
+  
+  // Update popup owl
+  document.getElementById('popupMouth').setAttribute('d', MOUTHS[mood]||MOUTHS.idle);
+  document.getElementById('popupIrisL').setAttribute('fill',c);
+  document.getElementById('popupIrisR').setAttribute('fill',c);
+  
   if(text) document.getElementById('owlText').textContent = text;
 }
+
 function showPopup(text) {
   clearTimeout(popupTimeout);
   document.getElementById('owlPopupText').textContent = text;
@@ -1130,7 +1209,9 @@ function showPopup(text) {
   popupTimeout = setTimeout(()=>document.getElementById('owlPopup').classList.remove('show'), 4000);
 }
 function closePopup() { document.getElementById('owlPopup').classList.remove('show'); }
+
 function owlClicked() {
+  initAudio();
   const t = getTotal();
   if(tier==='free' && t>3) {
     showPopup('Так много грехов... Может, пора на Серебро?');
@@ -1161,11 +1242,13 @@ function spawnParticles(n) {
 setInterval(()=>{ if(getTotal()>0) spawnParticles(1); }, 1200);
 
 function scrollTop() { window.scrollTo({top:0,behavior:'smooth'}); }
+function scrollToEl(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
 
 function resetDay() {
   if(!confirm('Новый день? Сбросить всё?')) return;
   if(activeTimer){clearInterval(activeTimer.interval);activeTimer=null;}
   SINS.forEach(s=>counts[s.id]=0);
+  freeSinsUsed = 0;
   PRAYERS_DATA.forEach(p=>pState[p.id]='idle');
   QUESTS.forEach(q=>questProg[q.id]=0);
   save(); renderAll();
@@ -1177,7 +1260,6 @@ document.getElementById('dateDisplay').textContent =
   new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 renderAll();
 setTimeout(()=>showPopup('Добро пожаловать. Твои грехи — моя забота.'), 1200);
-// Auto-show indulgence on first visit after 15s
 setTimeout(()=>{ if(tier==='free') showIndulgence(); }, 15000);
 </script>
 </body>
