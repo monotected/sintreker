@@ -3,585 +3,546 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Счётчик Грехов</title>
-<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<title>СинТрекер Pro™</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --blood: #8b0000;
-    --ember: #c0392b;
-    --gold: #c9a84c;
-    --parchment: #1a0a00;
-    --ash: #2d1a0e;
-    --smoke: #3d2010;
-    --bone: #d4b896;
-    --hell-glow: #ff4500;
-  }
+:root {
+  --blood: #8b0000; --ember: #c0392b; --gold: #c9a84c; --gold2: #f0d060;
+  --parchment: #1a0a00; --ash: #2d1a0e; --bone: #d4b896;
+  --hell: #ff4500; --silver: #a8b8c8; --plat: #e8e0f0; --vip: #ff88ff;
+  --green: #2d6a2d;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#080300; color:var(--bone);
+  font-family:'Crimson Text',serif;
+  min-height:100vh; overflow-x:hidden;
+}
+body::before {
+  content:''; position:fixed; bottom:0; left:0; right:0; height:35vh;
+  background:radial-gradient(ellipse at 50% 100%, rgba(200,50,0,0.2) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+  animation:hellglow 3s ease-in-out infinite alternate;
+}
+@keyframes hellglow { from{opacity:.5} to{opacity:1} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.shake { animation: shake 0.2s ease-in-out; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+.container { max-width:480px; margin:0 auto; padding:16px 14px 100px; position:relative; z-index:1; }
 
-  body {
-    background: #0a0400;
-    color: var(--bone);
-    font-family: 'Crimson Text', serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ── HEADER ─────────────────────────────────────── */
+header { text-align:center; padding:20px 0 10px; }
+.title-main {
+  font-family:'UnifrakturMaguntia',cursive; font-size:2.6rem;
+  color:var(--blood); text-shadow:0 0 20px rgba(200,0,0,.6);
+  line-height:1;
+}
+.title-badge {
+  display:inline-block; background:var(--blood);
+  font-family:'Cinzel',serif; font-size:.55rem; letter-spacing:3px;
+  color:#fff; padding:2px 10px; border-radius:3px; margin-top:4px;
+  text-transform:uppercase;
+}
+.date-line { font-family:'Cinzel',serif; font-size:.65rem; color:rgba(212,184,150,.4); margin-top:5px; letter-spacing:2px; }
+hr.orn { border:none; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); margin:12px 0; opacity:.4; }
 
-  body::before {
-    content: '';
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 40vh;
-    background: radial-gradient(ellipse at 50% 100%, rgba(200,50,0,0.25) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-    animation: hellglow 3s ease-in-out infinite alternate;
-  }
+/* ── UPDATE BANNER ───── */
+.update-banner {
+  background:linear-gradient(135deg,#0d0500,#1a0500);
+  border:1px solid var(--blood); border-radius:8px;
+  padding:10px 14px; margin-bottom:14px;
+  display:flex; align-items:center; gap:10px;
+  animation:pulse-border 2s infinite; cursor:pointer;
+}
+@keyframes pulse-border {
+  0%,100%{border-color:rgba(139,0,0,.4)} 50%{border-color:rgba(200,0,0,.9)}
+}
+.update-dot {
+  width:10px; height:10px; border-radius:50%;
+  background:var(--ember); flex-shrink:0;
+  animation:blink 1s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.update-text { font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:1px; color:var(--gold); flex:1; }
+.update-ver { font-size:.55rem; color:rgba(212,184,150,.4); }
 
-  @keyframes hellglow {
-    from { opacity: 0.6; }
-    to   { opacity: 1; }
-  }
+/* ── USER STATUS BAR ────────────────────────────── */
+.status-bar {
+  background:linear-gradient(135deg,var(--ash),var(--parchment));
+  border-radius:10px; padding:12px 14px; margin-bottom:14px;
+  border:1px solid rgba(139,0,0,.3);
+  display:flex; align-items:center; gap:10px;
+}
+.status-tier {
+  font-family:'Cinzel',serif; font-size:.7rem; font-weight:700;
+  letter-spacing:2px; padding:4px 10px; border-radius:5px;
+  text-transform:uppercase; white-space:nowrap;
+}
+.tier-free   { background:rgba(100,100,100,.3); color:#aaa; border:1px solid #555; }
+.tier-silver { background:rgba(168,184,200,.15); color:var(--silver); border:1px solid var(--silver); }
+.tier-gold   { background:rgba(201,168,76,.15); color:var(--gold2); border:1px solid var(--gold2); }
+.tier-plat   { background:rgba(200,180,240,.15); color:var(--plat); border:1px solid var(--plat); }
+.tier-vip    { background:rgba(255,100,255,.15); color:var(--vip); border:1px solid var(--vip); animation:vip-glow 1.5s infinite alternate; }
+@keyframes vip-glow { from{box-shadow:0 0 8px rgba(255,100,255,.3)} to{box-shadow:0 0 20px rgba(255,100,255,.7)} }
 
-  .container {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 20px 16px 80px;
-    position: relative;
-    z-index: 1;
-  }
+.status-info { flex:1; }
+.status-name { font-family:'Cinzel',serif; font-size:.65rem; color:var(--gold); }
+.status-perks { font-size:.72rem; font-style:italic; color:rgba(212,184,150,.6); margin-top:2px; }
+.btn-upgrade {
+  background:linear-gradient(135deg,#8b0000,#c0392b);
+  border:none; border-radius:6px; padding:8px 12px;
+  color:#fff; font-family:'Cinzel',serif; font-size:.55rem;
+  letter-spacing:1px; text-transform:uppercase; cursor:pointer;
+  white-space:nowrap; transition:all .2s;
+  box-shadow:0 0 12px rgba(200,0,0,.3);
+}
+.btn-upgrade:active { transform:scale(.95); }
 
-  header {
-    text-align: center;
-    padding: 24px 0 16px;
-  }
+/* ── STREAK + XP ────────────────────────────────── */
+.streak-row { display:flex; gap:10px; margin-bottom:14px; }
+.streak-card, .xp-card {
+  flex:1; background:linear-gradient(135deg,var(--parchment),var(--ash));
+  border:1px solid rgba(139,0,0,.3); border-radius:8px;
+  padding:10px 12px; text-align:center;
+}
+.streak-num { font-family:'UnifrakturMaguntia',cursive; font-size:2rem; color:var(--ember); line-height:1; }
+.streak-label { font-family:'Cinzel',serif; font-size:.55rem; letter-spacing:2px; color:rgba(212,184,150,.5); text-transform:uppercase; }
+.xp-bar-wrap { margin-top:6px; height:4px; background:rgba(139,0,0,.2); border-radius:2px; overflow:hidden; }
+.xp-bar-fill { height:100%; background:linear-gradient(to right,var(--blood),var(--ember)); border-radius:2px; transition:width .5s; }
 
-  .title-main {
-    font-family: 'UnifrakturMaguntia', cursive;
-    font-size: 3rem;
-    color: var(--blood);
-    text-shadow: 0 0 20px rgba(200,0,0,0.6), 0 0 40px rgba(200,0,0,0.3);
-    line-height: 1;
-  }
+/* ── OWL ────────────────────────────────────────── */
+.owl-section { position:relative; margin-bottom:14px; }
+.owl-bubble {
+  background:linear-gradient(135deg,#0d0500,#1a0a00);
+  border:1px solid rgba(139,0,0,.5); border-radius:12px;
+  padding:12px 14px 12px 78px; min-height:64px;
+  display:flex; align-items:center;
+}
+.owl-text { font-style:italic; font-size:.86rem; line-height:1.5; color:rgba(212,184,150,.9); }
+.owl-container { position:absolute; left:6px; bottom:-4px; width:64px; height:84px; cursor:pointer; z-index:10; }
+.owl-svg { width:100%; height:100%; filter:drop-shadow(0 0 8px rgba(200,0,0,.4)); transition:transform .15s; }
+.owl-container:active .owl-svg { transform:scale(.92); }
+@keyframes owl-idle { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+@keyframes owl-angry { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-8deg) scale(1.05)} 75%{transform:rotate(8deg) scale(1.05)} }
+@keyframes owl-happy { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+.owl-svg.idle  { animation:owl-idle 2.5s ease-in-out infinite; }
+.owl-svg.angry { animation:owl-angry .4s ease-in-out infinite; }
+.owl-svg.happy { animation:owl-happy .5s ease-in-out infinite; }
 
-  .title-sub {
-    font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    letter-spacing: 6px;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-top: 6px;
-    opacity: 0.8;
-  }
+/* ── SINS GRID ──────────────────────────────────── */
+.sins-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:14px; }
+.sin-card {
+  background:linear-gradient(135deg,var(--ash),var(--parchment));
+  border:1px solid rgba(139,0,0,.4); border-radius:8px;
+  padding:11px 9px; text-align:center; cursor:pointer;
+  user-select:none; -webkit-tap-highlight-color:transparent;
+  transition:all .2s; position:relative; overflow:hidden;
+}
+.sin-card.flash { border-color:var(--ember); transform:scale(.96); box-shadow:0 0 16px rgba(200,0,0,.5); background:linear-gradient(135deg,#3d0000,#1a0a00); }
+.sin-card.locked { opacity:.5; }
+.sin-icon { font-size:1.7rem; display:block; margin-bottom:3px; }
+.sin-name { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:1px; color:var(--gold); text-transform:uppercase; display:block; margin-bottom:5px; }
+.sin-count { font-family:'UnifrakturMaguntia',cursive; font-size:1.9rem; color:var(--blood); text-shadow:0 0 10px rgba(200,0,0,.4); line-height:1; }
+.sin-btn-row { display:flex; justify-content:center; gap:7px; margin-top:5px; }
+.btn-minus,.btn-plus {
+  width:24px; height:24px; border-radius:50%; border:1px solid rgba(139,0,0,.6);
+  background:rgba(100,0,0,.3); color:var(--bone); font-size:15px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .15s; -webkit-tap-highlight-color:transparent; line-height:1;
+}
+.btn-plus { background:rgba(139,0,0,.45); color:#ff8080; }
+.btn-minus:active,.btn-plus:active { transform:scale(.82); }
+.free-sin-badge {
+  position:absolute; top:4px; right:4px;
+  background:var(--green); color:#afffaf;
+  font-family:'Cinzel',serif; font-size:.45rem; padding:1px 5px; border-radius:3px;
+  letter-spacing:1px;
+}
 
-  .date-display {
-    font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    color: rgba(212,184,150,0.4);
-    margin-top: 6px;
-    letter-spacing: 2px;
-  }
+/* ── TOTAL ──────────────────────────────────────── */
+.total-block {
+  background:linear-gradient(135deg,#1a0000,var(--ash));
+  border:1px solid var(--blood); border-radius:10px;
+  padding:14px; text-align:center; margin-bottom:14px;
+  box-shadow:0 0 30px rgba(139,0,0,.15);
+}
+.total-label { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:4px; color:rgba(212,184,150,.4); text-transform:uppercase; }
+.total-number { font-family:'UnifrakturMaguntia',cursive; font-size:3.8rem; color:var(--ember); text-shadow:0 0 20px rgba(200,0,0,.7); line-height:1; transition:all .3s; }
+.total-number.bump { transform:scale(1.2); color:#ff2200; }
+.total-text { font-style:italic; font-size:.82rem; color:rgba(212,184,150,.55); margin-top:3px; }
 
-  hr.ornament {
-    border: none;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold), transparent);
-    margin: 14px 0;
-    opacity: 0.4;
-  }
+/* ── CHART ──────────────────────────────────────── */
+.chart-section {
+  background:linear-gradient(135deg,var(--parchment),var(--ash));
+  border:1px solid rgba(139,0,0,.3); border-radius:10px;
+  padding:14px; margin-bottom:14px;
+}
+.section-title { font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:3px; color:var(--gold); text-transform:uppercase; text-align:center; margin-bottom:12px; }
+.hell-meter { position:relative; width:160px; height:160px; margin:0 auto 12px; }
+.hell-meter svg { transform:rotate(-90deg); }
+.hell-meter-label { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+.hell-pct { font-family:'UnifrakturMaguntia',cursive; font-size:2rem; color:var(--ember); text-shadow:0 0 12px rgba(200,0,0,.6); display:block; }
+.hell-verdict { font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:1px; color:var(--gold); text-transform:uppercase; display:block; }
+.bar-chart { display:flex; align-items:flex-end; justify-content:space-around; height:60px; gap:3px; padding-bottom:3px; border-bottom:1px solid rgba(139,0,0,.3); margin-bottom:5px; }
+.bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+.bar { width:100%; max-width:26px; border-radius:3px 3px 0 0; background:linear-gradient(to top,var(--blood),var(--ember)); min-height:2px; transition:height .5s cubic-bezier(.34,1.56,.64,1); }
+.bar-label { font-size:.58rem; color:rgba(212,184,150,.4); margin-top:3px; text-align:center; }
 
-  /* ═══ OWL ═══════════════════════════════════════════ */
-  .owl-section {
-    position: relative;
-    margin-bottom: 16px;
-  }
+/* ── DAILY QUESTS ───────────────────────────────── */
+.quests-section {
+  background:linear-gradient(135deg,#050d00,#0a1a00);
+  border:1px solid rgba(100,150,0,.3); border-radius:10px;
+  padding:14px; margin-bottom:14px;
+}
+.quest-item {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 0; border-bottom:1px solid rgba(100,150,0,.1);
+}
+.quest-item:last-child { border-bottom:none; }
+.quest-icon { font-size:1.3rem; flex-shrink:0; }
+.quest-info { flex:1; }
+.quest-name { font-family:'Cinzel',serif; font-size:.62rem; color:#8fbc4f; letter-spacing:1px; }
+.quest-prog-bar { height:3px; background:rgba(100,150,0,.2); border-radius:2px; margin-top:4px; overflow:hidden; }
+.quest-prog-fill { height:100%; background:linear-gradient(to right,#2d6a00,#8fbc4f); border-radius:2px; transition:width .5s; }
+.quest-reward {
+  font-family:'Cinzel',serif; font-size:.55rem; color:var(--gold2);
+  white-space:nowrap;
+}
+.quest-done { color:#4a9a4a; text-decoration:line-through; opacity:.6; }
 
-  .owl-bubble {
-    background: linear-gradient(135deg, #0d0500, #1a0a00);
-    border: 1px solid rgba(139,0,0,0.5);
-    border-radius: 12px;
-    padding: 14px 16px 14px 80px;
-    min-height: 70px;
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
+/* ── LEADERBOARD ────────────────────────────────── */
+.lb-section {
+  background:linear-gradient(135deg,#05000d,#0d0020);
+  border:1px solid rgba(100,50,200,.3); border-radius:10px;
+  padding:14px; margin-bottom:14px;
+}
+.lb-item {
+  display:flex; align-items:center; gap:10px;
+  padding:7px 0; border-bottom:1px solid rgba(100,50,200,.1);
+}
+.lb-item:last-child { border-bottom:none; }
+.lb-rank { font-family:'UnifrakturMaguntia',cursive; font-size:1.3rem; color:rgba(212,184,150,.4); width:24px; text-align:center; flex-shrink:0; }
+.lb-rank.gold-rank { color:var(--gold2); text-shadow:0 0 8px rgba(240,208,96,.5); }
+.lb-avatar { font-size:1.4rem; }
+.lb-info { flex:1; }
+.lb-name { font-family:'Cinzel',serif; font-size:.65rem; color:rgba(212,184,150,.85); }
+.lb-stat { font-size:.7rem; font-style:italic; color:rgba(212,184,150,.4); }
+.lb-badge { font-size:.5rem; padding:2px 6px; border-radius:3px; font-family:'Cinzel',serif; letter-spacing:1px; }
+.you-marker { background:rgba(139,0,0,.4); color:var(--ember); border:1px solid var(--blood); }
 
-  .owl-bubble::after {
-    content: '';
-    position: absolute;
-    left: 65px; bottom: -8px;
-    width: 0; height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid rgba(139,0,0,0.5);
-  }
+/* ── PRAYERS ────────────────────────────────────── */
+.prayers-section {
+  background:linear-gradient(135deg,#0d0a00,var(--ash));
+  border:1px solid rgba(201,168,76,.2); border-radius:10px;
+  padding:14px; margin-bottom:14px;
+}
+.prayer-card {
+  background:rgba(0,0,0,.3); border:1px solid rgba(201,168,76,.15);
+  border-radius:8px; padding:12px; margin-bottom:9px; position:relative;
+  transition:border-color .3s;
+}
+.prayer-card:last-child { margin-bottom:0; }
+.prayer-card.reading { border-color:var(--gold); box-shadow:0 0 12px rgba(201,168,76,.2); }
+.prayer-card.done { border-color:#2d5a2d; background:rgba(0,40,0,.2); }
+.prayer-card.locked-prayer {
+  opacity:.7; position:relative; overflow:hidden;
+}
+.prayer-card.locked-prayer::after {
+  content:''; position:absolute; inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(2px); border-radius:8px;
+}
+.prayer-lock-overlay {
+  position:absolute; inset:0; z-index:2;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px;
+}
+.prayer-lock-icon { font-size:1.8rem; filter:drop-shadow(0 0 8px rgba(201,168,76,.5)); }
+.prayer-lock-text { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:2px; color:var(--gold2); text-transform:uppercase; }
+.prayer-lock-tier {
+  font-family:'Cinzel',serif; font-size:.5rem; padding:2px 8px; border-radius:3px;
+  background:rgba(201,168,76,.2); color:var(--gold2); border:1px solid rgba(201,168,76,.3);
+}
+.prayer-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+.prayer-badge { display:inline-block; background:var(--blood); color:var(--bone); font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:1px; text-transform:uppercase; padding:2px 7px; border-radius:3px; }
+.prayer-badge.premium { background:linear-gradient(135deg,#7a5500,#c9a84c); color:#fff; }
+.prayer-status { font-family:'Cinzel',serif; font-size:.52rem; color:rgba(212,184,150,.4); }
+.prayer-card.reading .prayer-status { color:var(--gold); }
+.prayer-card.done .prayer-status { color:#4a9a4a; }
+.prayer-text { font-style:italic; font-size:.86rem; line-height:1.55; color:rgba(212,184,150,.82); }
+.prayer-name { font-family:'Cinzel',serif; font-size:.58rem; color:var(--gold); letter-spacing:2px; margin-top:7px; opacity:.6; }
+.prayer-bonus { font-family:'Cinzel',serif; font-size:.55rem; color:#4a9a4a; margin-top:4px; }
+.prayer-timer { font-family:'UnifrakturMaguntia',cursive; font-size:1.5rem; color:var(--gold); text-align:center; margin:8px 0; text-shadow:0 0 10px rgba(201,168,76,.4); }
+.prayer-progress { height:2px; background:rgba(201,168,76,.1); border-radius:2px; margin-top:8px; overflow:hidden; }
+.prayer-progress-fill { height:100%; width:0%; background:linear-gradient(to right,var(--gold),#ffdd88); border-radius:2px; transition:width 1s linear; }
+.prayer-card.done .prayer-progress-fill { width:100%!important; background:#4a9a4a; }
+.btn-read {
+  display:block; width:100%; margin-top:8px; padding:7px;
+  background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.3);
+  border-radius:6px; color:var(--gold); font-family:'Cinzel',serif;
+  font-size:.58rem; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all .2s;
+}
+.btn-read:hover { background:rgba(201,168,76,.2); }
+.prayer-card.done .btn-read { color:#4a9a4a; border-color:rgba(74,154,74,.3); }
 
-  .owl-text {
-    font-style: italic;
-    font-size: 0.88rem;
-    line-height: 1.5;
-    color: rgba(212,184,150,0.9);
-    transition: opacity 0.3s;
-  }
+/* ── RESET ──────────────────────────────────────── */
+.reset-btn {
+  display:block; width:100%; padding:12px;
+  background:linear-gradient(135deg,#1a0000,#2d0000);
+  border:1px solid rgba(139,0,0,.3); border-radius:8px;
+  color:rgba(212,184,150,.4); font-family:'Cinzel',serif;
+  font-size:.62rem; letter-spacing:3px; text-transform:uppercase; cursor:pointer;
+}
+.reset-btn:active { background:rgba(139,0,0,.2); color:var(--bone); }
 
-  /* SVG OWL */
-  .owl-container {
-    position: absolute;
-    left: 8px;
-    bottom: -5px;
-    width: 68px;
-    height: 90px;
-    cursor: pointer;
-    z-index: 10;
-  }
+/* ── PARTICLES ──────────────────────────────────── */
+.particles { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.particle {
+  position:absolute; bottom:-20px; width:4px; height:4px;
+  border-radius:50%; background:var(--hell); opacity:0;
+  animation:float-up linear infinite; box-shadow:0 0 6px var(--hell);
+}
+@keyframes float-up {
+  0%  { transform:translateY(0) scale(1); opacity:0; }
+  20% { opacity:.6; }
+  80% { opacity:.3; }
+  100%{ transform:translateY(-60vh) translateX(var(--drift)) scale(.2); opacity:0; }
+}
 
-  .owl-svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 8px rgba(200,0,0,0.4));
-    transition: transform 0.15s;
-  }
+/* ══════════════════════════════════════════════════
+   MODAL OVERLAYS
+══════════════════════════════════════════════════ */
+.modal-bg {
+  position:fixed; inset:0; background:rgba(0,0,0,.85);
+  z-index:200; display:flex; align-items:center; justify-content:center;
+  padding:20px; opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.modal-bg.show { opacity:1; pointer-events:all; }
+.modal {
+  background:linear-gradient(135deg,#0d0500,#1a0800);
+  border-radius:16px; width:100%; max-width:400px;
+  max-height:85vh; overflow-y:auto;
+  transform:translateY(30px); transition:transform .3s;
+}
+.modal-bg.show .modal { transform:translateY(0); }
 
-  .owl-container:active .owl-svg { transform: scale(0.92); }
+/* Shop modal */
+.shop-header {
+  background:linear-gradient(135deg,#3a0000,#1a0000);
+  padding:20px; text-align:center; border-radius:16px 16px 0 0;
+  border-bottom:1px solid rgba(139,0,0,.4);
+}
+.shop-title { font-family:'UnifrakturMaguntia',cursive; font-size:2rem; color:var(--blood); text-shadow:0 0 20px rgba(200,0,0,.6); }
+.shop-subtitle { font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-top:4px; }
+.shop-body { padding:16px; }
+.shop-tier {
+  border:1px solid rgba(139,0,0,.3); border-radius:10px;
+  padding:14px; margin-bottom:12px; cursor:pointer; transition:all .2s;
+  position:relative; overflow:hidden;
+}
+.shop-tier:hover { border-color:rgba(200,0,0,.6); }
+.shop-tier.silver-tier { border-color:rgba(168,184,200,.3); }
+.shop-tier.gold-tier   { border-color:rgba(201,168,76,.4); background:rgba(201,168,76,.05); }
+.shop-tier.plat-tier   { border-color:rgba(200,180,240,.4); background:rgba(200,180,240,.05); }
+.shop-tier.vip-tier    { border-color:rgba(255,100,255,.5); background:rgba(255,100,255,.06); animation:vip-glow 1.5s infinite alternate; }
+.tier-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.tier-name { font-family:'Cinzel',serif; font-size:.85rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; }
+.tier-price {
+  font-family:'Cinzel',serif; font-size:.75rem; font-weight:700;
+  background:var(--blood); color:#fff; padding:4px 10px; border-radius:5px;
+}
+.tier-perks { list-style:none; }
+.tier-perks li { font-size:.8rem; padding:3px 0; color:rgba(212,184,150,.75); }
+.tier-perks li::before { content:'✦ '; color:var(--gold); font-size:.6rem; }
+.btn-buy {
+  display:block; width:100%; margin-top:10px; padding:10px;
+  border:none; border-radius:8px; font-family:'Cinzel',serif;
+  font-size:.65rem; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all .2s;
+}
+.btn-buy-silver { background:linear-gradient(135deg,#667788,#99aabb); color:#fff; }
+.btn-buy-gold   { background:linear-gradient(135deg,#8b6914,#c9a84c); color:#fff; }
+.btn-buy-plat   { background:linear-gradient(135deg,#8070a0,#c0b0e0); color:#fff; }
+.btn-buy-vip    { background:linear-gradient(135deg,#880088,#ff44ff); color:#fff; box-shadow:0 0 20px rgba(255,100,255,.4); }
+.btn-buy:active { transform:scale(.97); }
+.modal-close {
+  display:block; width:100%; padding:12px;
+  background:rgba(100,0,0,.2); border:1px solid rgba(139,0,0,.3);
+  border-radius:0 0 16px 16px; color:rgba(212,184,150,.4);
+  font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer;
+}
 
-  /* Owl animations */
-  @keyframes owl-idle {
-    0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-4px); }
-  }
-  @keyframes owl-angry {
-    0%,100% { transform: rotate(0deg); }
-    25%  { transform: rotate(-8deg) scale(1.05); }
-    75%  { transform: rotate(8deg) scale(1.05); }
-  }
-  @keyframes owl-happy {
-    0%,100% { transform: scale(1) rotate(0deg); }
-    30%  { transform: scale(1.12) rotate(-5deg); }
-    60%  { transform: scale(1.12) rotate(5deg); }
-  }
-  @keyframes owl-scared {
-    0%,100% { transform: translateX(0); }
-    20%  { transform: translateX(-6px); }
-    40%  { transform: translateX(6px); }
-    60%  { transform: translateX(-4px); }
-    80%  { transform: translateX(4px); }
-  }
-  @keyframes eye-blink {
-    0%,90%,100% { transform: scaleY(1); }
-    95% { transform: scaleY(0.1); }
-  }
+/* ── INDULGENCE FULLSCREEN ──────────────────────── */
+.indulgence-screen {
+  position:fixed; inset:0; z-index:300;
+  background:linear-gradient(135deg,#1a0000,#0a0000,#1a0800);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:30px; opacity:0; pointer-events:none; transition:opacity .4s;
+}
+.indulgence-screen.show { opacity:1; pointer-events:all; }
+.ind-cross { font-size:4rem; margin-bottom:16px; filter:drop-shadow(0 0 20px rgba(200,150,0,.8)); animation:float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.ind-title { font-family:'UnifrakturMaguntia',cursive; font-size:2.2rem; color:var(--gold); text-align:center; text-shadow:0 0 30px rgba(201,168,76,.5); margin-bottom:8px; }
+.ind-sub { font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:3px; color:var(--blood); text-transform:uppercase; text-align:center; margin-bottom:20px; }
+.ind-offer {
+  background:linear-gradient(135deg,#1a0a00,#2d1000);
+  border:2px solid var(--gold); border-radius:14px;
+  padding:20px; width:100%; max-width:340px; text-align:center; margin-bottom:16px;
+}
+.ind-offer-name { font-family:'Cinzel',serif; font-size:1rem; color:var(--gold2); margin-bottom:6px; font-weight:700; }
+.ind-offer-desc { font-style:italic; font-size:.85rem; color:rgba(212,184,150,.8); line-height:1.5; margin-bottom:14px; }
+.ind-price {
+  font-family:'UnifrakturMaguntia',cursive; font-size:2.5rem;
+  color:var(--ember); text-shadow:0 0 15px rgba(200,0,0,.5); display:block; margin-bottom:4px;
+}
+.ind-price-sub { font-size:.7rem; color:rgba(212,184,150,.4); font-style:italic; }
+.btn-ind-buy {
+  display:block; width:100%; padding:14px; margin-top:14px;
+  background:linear-gradient(135deg,#8b6914,#c9a84c);
+  border:none; border-radius:10px; color:#fff;
+  font-family:'Cinzel',serif; font-size:.75rem; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer;
+  box-shadow:0 0 20px rgba(201,168,76,.4);
+  animation:btn-pulse 2s infinite;
+}
+@keyframes btn-pulse { 0%,100%{box-shadow:0 0 20px rgba(201,168,76,.4)} 50%{box-shadow:0 0 40px rgba(201,168,76,.7)} }
+.btn-ind-skip {
+  background:none; border:none; color:rgba(212,184,150,.15);
+  font-family:'Cinzel',serif; font-size:.4rem; letter-spacing:2px;
+  cursor:pointer; padding:8px; text-transform:uppercase;
+  /* intentionally tiny and hard to see */
+}
+.ind-timer { font-family:'Cinzel',serif; font-size:.6rem; color:rgba(212,184,150,.4); margin-bottom:8px; }
 
-  .owl-svg.idle   { animation: owl-idle 2.5s ease-in-out infinite; }
-  .owl-svg.angry  { animation: owl-angry 0.4s ease-in-out infinite; }
-  .owl-svg.happy  { animation: owl-happy 0.5s ease-in-out infinite; }
-  .owl-svg.scared { animation: owl-scared 0.3s ease-in-out 3; }
+/* ── BOTTOM NAV ─────────────────────────────────── */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:50;
+  background:linear-gradient(to top,#080300,rgba(8,3,0,.95));
+  border-top:1px solid rgba(139,0,0,.3);
+  display:flex; max-width:480px; margin:0 auto;
+}
+.nav-btn {
+  flex:1; padding:10px 4px 14px; background:none; border:none;
+  color:rgba(212,184,150,.4); cursor:pointer; transition:color .2s;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  -webkit-tap-highlight-color:transparent;
+}
+.nav-btn.active { color:var(--gold); }
+.nav-btn:active { color:var(--ember); }
+.nav-icon { font-size:1.3rem; }
+.nav-label { font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:1px; text-transform:uppercase; }
+.nav-badge {
+  position:absolute; top:6px; right:calc(50% - 18px);
+  background:var(--blood); color:#fff; font-size:.5rem;
+  width:16px; height:16px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel',serif;
+}
 
-  .owl-eye { animation: eye-blink 4s ease-in-out infinite; transform-origin: center; }
-  .owl-eye-r { animation: eye-blink 4s ease-in-out 0.2s infinite; transform-origin: center; }
+/* ── OWL POPUP ──────────────────────────────────── */
+.owl-popup {
+  position:fixed; bottom:-200px; left:50%; transform:translateX(-50%);
+  width:90%; max-width:360px;
+  background:linear-gradient(135deg,#0d0500,#1f0a00);
+  border:2px solid var(--blood); border-radius:16px;
+  padding:18px 18px 18px 86px;
+  box-shadow:0 0 40px rgba(200,0,0,.4);
+  z-index:100; transition:bottom .5s cubic-bezier(.34,1.3,.64,1);
+  min-height:84px; display:flex; align-items:center;
+}
+.owl-popup.show { bottom:70px; }
+.owl-popup-owl { position:absolute; left:10px; bottom:0; width:70px; height:88px; }
+.owl-popup-text { font-family:'Crimson Text',serif; font-style:italic; font-size:.9rem; line-height:1.5; color:var(--bone); }
+.owl-popup-close { position:absolute; top:8px; right:10px; background:none; border:none; color:rgba(212,184,150,.4); font-size:1rem; cursor:pointer; }
 
-  /* Prayer timer */
-  .prayer-timer-bar {
-    height: 3px;
-    background: rgba(139,0,0,0.2);
-    border-radius: 2px;
-    margin-top: 4px;
-    overflow: hidden;
-  }
-  .prayer-timer-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(to right, var(--blood), var(--ember));
-    border-radius: 2px;
-    transition: width 0.5s linear;
-  }
-
-  /* ═══ SINS GRID ════════════════════════════════════ */
-  .sins-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-
-  .sin-card {
-    background: linear-gradient(135deg, var(--ash), var(--parchment));
-    border: 1px solid rgba(139,0,0,0.4);
-    border-radius: 8px;
-    padding: 12px 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .sin-card.flash {
-    border-color: var(--ember);
-    transform: scale(0.96);
-    box-shadow: 0 0 16px rgba(200,0,0,0.5);
-    background: linear-gradient(135deg, #3d0000, #1a0a00);
-  }
-
-  .sin-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
-  .sin-name {
-    font-family: 'Cinzel', serif;
-    font-size: 0.6rem;
-    letter-spacing: 1px;
-    color: var(--gold);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 6px;
-  }
-  .sin-count {
-    font-family: 'UnifrakturMaguntia', cursive;
-    font-size: 2rem;
-    color: var(--blood);
-    text-shadow: 0 0 10px rgba(200,0,0,0.4);
-    line-height: 1;
-  }
-  .sin-btn-row {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 6px;
-  }
-  .btn-minus, .btn-plus {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    border: 1px solid rgba(139,0,0,0.6);
-    background: rgba(100,0,0,0.3);
-    color: var(--bone);
-    font-size: 16px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
-    -webkit-tap-highlight-color: transparent;
-    line-height: 1;
-  }
-  .btn-plus { background: rgba(139,0,0,0.45); color: #ff8080; }
-  .btn-minus:active, .btn-plus:active { transform: scale(0.82); }
-
-  /* ═══ TOTAL ════════════════════════════════════════ */
-  .total-block {
-    background: linear-gradient(135deg, #1a0000, var(--ash));
-    border: 1px solid var(--blood);
-    border-radius: 10px;
-    padding: 16px;
-    text-align: center;
-    margin-bottom: 18px;
-    box-shadow: 0 0 30px rgba(139,0,0,0.15);
-  }
-  .total-label {
-    font-family: 'Cinzel', serif;
-    font-size: 0.6rem;
-    letter-spacing: 4px;
-    color: rgba(212,184,150,0.4);
-    text-transform: uppercase;
-  }
-  .total-number {
-    font-family: 'UnifrakturMaguntia', cursive;
-    font-size: 4rem;
-    color: var(--ember);
-    text-shadow: 0 0 20px rgba(200,0,0,0.7);
-    line-height: 1;
-    transition: all 0.3s;
-  }
-  .total-number.bump { transform: scale(1.2); color: #ff2200; }
-  .total-text { font-style: italic; font-size: 0.85rem; color: rgba(212,184,150,0.55); margin-top: 4px; }
-
-  /* ═══ CHART ════════════════════════════════════════ */
-  .chart-section {
-    background: linear-gradient(135deg, var(--parchment), var(--ash));
-    border: 1px solid rgba(139,0,0,0.3);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 18px;
-  }
-  .section-title {
-    font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
-    letter-spacing: 3px;
-    color: var(--gold);
-    text-transform: uppercase;
-    text-align: center;
-    margin-bottom: 14px;
-  }
-  .hell-meter {
-    position: relative;
-    width: 170px;
-    height: 170px;
-    margin: 0 auto 14px;
-  }
-  .hell-meter svg { transform: rotate(-90deg); }
-  .hell-meter-label {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .hell-pct {
-    font-family: 'UnifrakturMaguntia', cursive;
-    font-size: 2.1rem;
-    color: var(--ember);
-    text-shadow: 0 0 12px rgba(200,0,0,0.6);
-    display: block;
-  }
-  .hell-verdict {
-    font-family: 'Cinzel', serif;
-    font-size: 0.5rem;
-    letter-spacing: 1px;
-    color: var(--gold);
-    text-transform: uppercase;
-    display: block;
-  }
-  .bar-chart {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-around;
-    height: 70px;
-    gap: 4px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid rgba(139,0,0,0.3);
-    margin-bottom: 6px;
-  }
-  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
-  .bar {
-    width: 100%; max-width: 28px;
-    border-radius: 3px 3px 0 0;
-    background: linear-gradient(to top, var(--blood), var(--ember));
-    min-height: 2px;
-    transition: height 0.5s cubic-bezier(0.34,1.56,0.64,1);
-    box-shadow: 0 0 8px rgba(200,0,0,0.3);
-  }
-  .bar-label { font-size: 0.6rem; color: rgba(212,184,150,0.4); margin-top: 3px; text-align: center; }
-
-  /* ═══ PRAYERS ══════════════════════════════════════ */
-  .prayers-section {
-    background: linear-gradient(135deg, #0d0a00, var(--ash));
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 18px;
-  }
-  .prayer-card {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(201,168,76,0.15);
-    border-radius: 8px;
-    padding: 14px;
-    margin-bottom: 10px;
-    position: relative;
-    cursor: pointer;
-    transition: border-color 0.3s;
-  }
-  .prayer-card:last-child { margin-bottom: 0; }
-  .prayer-card.reading { border-color: var(--gold); box-shadow: 0 0 12px rgba(201,168,76,0.2); }
-  .prayer-card.done { border-color: #2d5a2d; background: rgba(0,50,0,0.2); }
-
-  .prayer-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .prayer-badge {
-    display: inline-block;
-    background: var(--blood);
-    color: var(--bone);
-    font-family: 'Cinzel', serif;
-    font-size: 0.5rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 3px;
-  }
-  .prayer-status {
-    font-size: 0.75rem;
-    color: rgba(212,184,150,0.4);
-    font-family: 'Cinzel', serif;
-    font-size: 0.55rem;
-  }
-  .prayer-card.reading .prayer-status { color: var(--gold); }
-  .prayer-card.done .prayer-status { color: #4a9a4a; }
-
-  .prayer-text { font-style: italic; font-size: 0.88rem; line-height: 1.6; color: rgba(212,184,150,0.82); }
-  .prayer-name { font-family: 'Cinzel', serif; font-size: 0.6rem; color: var(--gold); letter-spacing: 2px; margin-top: 8px; opacity: 0.6; }
-
-  .prayer-progress {
-    height: 2px;
-    background: rgba(201,168,76,0.1);
-    border-radius: 2px;
-    margin-top: 10px;
-    overflow: hidden;
-  }
-  .prayer-progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(to right, var(--gold), #ffdd88);
-    border-radius: 2px;
-    transition: width 0.3s linear;
-  }
-  .prayer-card.done .prayer-progress-fill { width: 100% !important; background: #4a9a4a; }
-
-  /* Read button */
-  .btn-read {
-    display: block;
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    background: rgba(201,168,76,0.1);
-    border: 1px solid rgba(201,168,76,0.3);
-    border-radius: 6px;
-    color: var(--gold);
-    font-family: 'Cinzel', serif;
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-read:hover { background: rgba(201,168,76,0.2); }
-  .prayer-card.done .btn-read { color: #4a9a4a; border-color: rgba(74,154,74,0.3); }
-
-  /* ═══ RESET ════════════════════════════════════════ */
-  .reset-btn {
-    display: block; width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #1a0000, #2d0000);
-    border: 1px solid rgba(139,0,0,0.4);
-    border-radius: 8px;
-    color: rgba(212,184,150,0.4);
-    font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .reset-btn:active { background: rgba(139,0,0,0.2); color: var(--bone); }
-
-  /* ═══ PARTICLES ════════════════════════════════════ */
-  .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-  .particle {
-    position: absolute; bottom: -20px;
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--hell-glow);
-    opacity: 0;
-    animation: float-up linear infinite;
-    box-shadow: 0 0 6px var(--hell-glow);
-  }
-  @keyframes float-up {
-    0%   { transform: translateY(0) scale(1); opacity: 0; }
-    20%  { opacity: 0.6; }
-    80%  { opacity: 0.3; }
-    100% { transform: translateY(-60vh) translateX(var(--drift)) scale(0.2); opacity: 0; }
-  }
-
-  /* ═══ OWL POPUP ════════════════════════════════════ */
-  .owl-popup {
-    position: fixed;
-    bottom: -200px;
-    left: 50%; transform: translateX(-50%);
-    width: 90%; max-width: 360px;
-    background: linear-gradient(135deg, #0d0500, #1f0a00);
-    border: 2px solid var(--blood);
-    border-radius: 16px;
-    padding: 20px 20px 20px 90px;
-    box-shadow: 0 0 40px rgba(200,0,0,0.4);
-    z-index: 100;
-    transition: bottom 0.5s cubic-bezier(0.34,1.3,0.64,1);
-    min-height: 90px;
-    display: flex;
-    align-items: center;
-  }
-  .owl-popup.show { bottom: 20px; }
-  .owl-popup-owl {
-    position: absolute;
-    left: 10px; bottom: 0;
-    width: 75px; height: 95px;
-  }
-  .owl-popup-text {
-    font-family: 'Crimson Text', serif;
-    font-style: italic;
-    font-size: 0.92rem;
-    line-height: 1.5;
-    color: var(--bone);
-  }
-  .owl-popup-close {
-    position: absolute;
-    top: 8px; right: 10px;
-    background: none; border: none;
-    color: rgba(212,184,150,0.4);
-    font-size: 1rem; cursor: pointer;
-  }
+/* ── NOTIFICATION DOTS ──────────────────────────── */
+.notif-dot {
+  display:inline-block; width:7px; height:7px; border-radius:50%;
+  background:var(--blood); margin-left:4px; vertical-align:middle;
+  animation:blink 1s infinite;
+}
 </style>
 </head>
 <body>
-
 <div class="particles" id="particles"></div>
 
-<div class="container">
+<div class="container" id="mainContainer">
+
+  <!-- UPDATE BANNER -->
+  <div class="update-banner" id="updateBanner" onclick="this.style.display='none'">
+    <div class="update-dot"></div>
+    <div>
+      <div class="update-text">🔥 Обновление 1.1 → доступно!</div>
+      <div class="update-ver">Нажми, чтобы закрыть (или купи VIP)</div>
+    </div>
+  </div>
 
   <header>
-    <div class="title-main">Грехи</div>
-    <div class="title-sub">Ежедневный учёт</div>
-    <div class="date-display" id="dateDisplay"></div>
+    <div class="title-main">СинТрекер</div>
+    <div class="title-badge" id="appVersion">Free Edition</div>
+    <div class="date-line" id="dateDisplay"></div>
   </header>
+  <hr class="orn">
 
-  <hr class="ornament">
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-tier tier-free" id="tierBadge">FREE</div>
+    <div class="status-info">
+      <div class="status-name" id="statusName">Обычный грешник</div>
+      <div class="status-perks" id="statusPerks">Базовые молитвы • Ограниченный доступ</div>
+    </div>
+    <button class="btn-upgrade" onclick="openShop()">УЛУЧШИТЬ ✦</button>
+  </div>
 
-  <!-- OWL SECTION -->
+  <!-- STREAK -->
+  <div class="streak-row">
+    <div class="streak-card">
+      <div class="streak-num" id="streakNum">1</div>
+      <div class="streak-label">🔥 Дней подряд</div>
+    </div>
+    <div class="xp-card">
+      <div class="streak-label">Духовный опыт</div>
+      <div class="streak-num" id="xpNum" style="font-size:1.5rem;margin-top:4px">0 XP</div>
+      <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- OWL -->
   <div class="owl-section">
     <div class="owl-bubble">
-      <div class="owl-text" id="owlText">Здравствуй, грешник. Я слежу за каждым твоим движением.</div>
+      <div class="owl-text" id="owlText">Добро пожаловать, грешник. Сегодня хороший день чтобы каяться.</div>
     </div>
-    <div class="prayer-timer-bar"><div class="prayer-timer-fill" id="timerFill"></div></div>
     <div class="owl-container" onclick="owlClicked()">
       <svg class="owl-svg idle" id="owlSvg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
-        <!-- Body -->
         <ellipse cx="50" cy="85" rx="32" ry="38" fill="#1a2800"/>
-        <!-- Dark feather overlay -->
         <ellipse cx="50" cy="88" rx="28" ry="34" fill="#0d1800"/>
-        <!-- Wing left -->
         <ellipse cx="20" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(-15,20,90)"/>
-        <!-- Wing right -->
         <ellipse cx="80" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(15,80,90)"/>
-        <!-- Belly -->
         <ellipse cx="50" cy="95" rx="18" ry="22" fill="#2d4400"/>
-        <!-- Head -->
         <ellipse cx="50" cy="48" rx="26" ry="26" fill="#1a2800"/>
-        <!-- Ear tufts -->
         <polygon points="28,28 22,8 36,22" fill="#0d1800"/>
         <polygon points="72,28 78,8 64,22" fill="#0d1800"/>
-        <!-- Evil red glow around eyes -->
-        <circle cx="38" cy="48" r="13" fill="#330000" opacity="0.8"/>
-        <circle cx="62" cy="48" r="13" fill="#330000" opacity="0.8"/>
-        <!-- Eye whites -->
+        <circle cx="38" cy="48" r="13" fill="#330000" opacity=".8"/>
+        <circle cx="62" cy="48" r="13" fill="#330000" opacity=".8"/>
         <circle cx="38" cy="48" r="11" fill="#ffeecc"/>
         <circle cx="62" cy="48" r="11" fill="#ffeecc"/>
-        <!-- Eye iris - RED -->
         <circle cx="38" cy="48" r="7" fill="#cc0000" id="irisL"/>
         <circle cx="62" cy="48" r="7" fill="#cc0000" id="irisR"/>
-        <!-- Pupils -->
-        <circle cx="38" cy="48" r="4" fill="#000" class="owl-eye"/>
-        <circle cx="62" cy="48" r="4" fill="#000" class="owl-eye-r"/>
-        <!-- Evil glint -->
+        <circle cx="38" cy="48" r="4" fill="#000"/>
+        <circle cx="62" cy="48" r="4" fill="#000"/>
         <circle cx="40" cy="46" r="1.5" fill="white"/>
         <circle cx="64" cy="46" r="1.5" fill="white"/>
-        <!-- Beak -->
         <polygon points="50,54 44,62 56,62" fill="#c9a84c"/>
-        <!-- Duolingo-style smile becomes evil frown -->
-        <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none"/>
-        <!-- Feet -->
+        <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none" id="owlMouth"/>
         <line x1="40" y1="122" x2="30" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
         <line x1="40" y1="122" x2="38" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
         <line x1="40" y1="122" x2="46" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
         <line x1="60" y1="122" x2="70" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
         <line x1="60" y1="122" x2="62" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
         <line x1="60" y1="122" x2="54" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
-        <!-- Chest cross -->
-        <path d="M46,88 L54,88 M50,84 L50,96" stroke="#8b0000" stroke-width="2.5" opacity="0.7"/>
-        <!-- Red glow eyes effect -->
-        <circle cx="38" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/>
-        <circle cx="62" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/>
+        <path d="M46,88 L54,88 M50,84 L50,96" stroke="#8b0000" stroke-width="2.5" opacity=".7"/>
+        <circle cx="38" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity=".5"/>
+        <circle cx="62" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity=".5"/>
       </svg>
     </div>
   </div>
@@ -595,28 +556,20 @@
     <div class="total-number" id="totalCount">0</div>
     <div class="total-text" id="totalText">Начни с чистого листа...</div>
   </div>
-
-  <hr class="ornament">
+  <hr class="orn">
 
   <!-- CHART -->
   <div class="chart-section">
-    <div class="section-title">☩ Путь к Аду ☩</div>
+    <div class="section-title">☫ Путь к Аду ☫</div>
     <div class="hell-meter">
-      <svg width="170" height="170" viewBox="0 0 170 170">
-        <circle cx="85" cy="85" r="65" fill="none" stroke="rgba(139,0,0,0.2)" stroke-width="13"/>
-        <circle cx="85" cy="85" r="65" fill="none"
-          stroke="url(#fireGrad)" stroke-width="13"
-          stroke-linecap="round"
-          stroke-dasharray="408.4"
-          stroke-dashoffset="408.4"
-          id="hellArc"
-          style="transition: stroke-dashoffset 0.8s cubic-bezier(0.34,1.1,0.64,1)"/>
-        <defs>
-          <linearGradient id="fireGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#8b0000"/>
-            <stop offset="100%" stop-color="#ff4500"/>
-          </linearGradient>
-        </defs>
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(139,0,0,.2)" stroke-width="12"/>
+        <circle cx="80" cy="80" r="60" fill="none" stroke="url(#fg)" stroke-width="12"
+          stroke-linecap="round" stroke-dasharray="376.9" stroke-dashoffset="376.9"
+          id="hellArc" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.1,.64,1)"/>
+        <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#8b0000"/><stop offset="100%" stop-color="#ff4500"/>
+        </linearGradient></defs>
       </svg>
       <div class="hell-meter-label">
         <span class="hell-pct" id="hellPct">0%</span>
@@ -626,20 +579,143 @@
     <div class="bar-chart" id="barChart"></div>
   </div>
 
+  <!-- DAILY QUESTS -->
+  <div class="quests-section" id="questsSection">
+    <div class="section-title" style="color:#8fbc4f;border-color:rgba(100,150,0,.3)">⚔ Задания Дня ⚔</div>
+    <div id="questsList"></div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="lb-section" id="lbSection">
+    <div class="section-title" style="color:#aa88ff">👁 Рейтинг Духовности 👁</div>
+    <div id="lbList"></div>
+    <div style="text-align:center;margin-top:10px">
+      <span style="font-family:'Cinzel',serif;font-size:.55rem;color:rgba(212,184,150,.3);letter-spacing:2px">ОБНОВЛЯЕТСЯ КАЖДЫЙ ЧАС</span>
+    </div>
+  </div>
+
   <!-- PRAYERS -->
   <div class="prayers-section">
-    <div class="section-title">✝ Покаяние — читай под надзором ✝</div>
+    <div class="section-title">✝ Покаяние ✝</div>
     <div id="prayersContainer"></div>
   </div>
 
-  <button class="reset-btn" onclick="resetDay()">⊕ Новый День — Очистить Счётчик ⊕</button>
-
+  <button class="reset-btn" onclick="resetDay()">⊕ Новый День ⊕</button>
 </div>
 
-<!-- OWL POPUP -->
+<!-- ── BOTTOM NAV ───────────────────────────────── -->
+<div class="bottom-nav">
+  <button class="nav-btn active" onclick="scrollTop()">
+    <span class="nav-icon">☩</span>
+    <span class="nav-label">Грехи</span>
+  </button>
+  <button class="nav-btn" onclick="openShop()" style="position:relative">
+    <span class="nav-icon">💰</span>
+    <span class="nav-label">Магазин</span>
+    <span class="nav-badge">3</span>
+  </button>
+  <button class="nav-btn" onclick="showIndulgence()">
+    <span class="nav-icon">📜</span>
+    <span class="nav-label">Индульгенции</span>
+  </button>
+  <button class="nav-btn" onclick="scrollToEl('lbSection')">
+    <span class="nav-icon">🏆</span>
+    <span class="nav-label">Рейтинг</span>
+  </button>
+</div>
+
+<!-- ── SHOP MODAL ───────────────────────────────── -->
+<div class="modal-bg" id="shopModal">
+  <div class="modal">
+    <div class="shop-header">
+      <div class="shop-title">Магазин Благодати</div>
+      <div class="shop-subtitle">Инвестируй в спасение души</div>
+    </div>
+    <div class="shop-body">
+      <div class="shop-tier silver-tier" onclick="purchase('silver')">
+        <div class="tier-header">
+          <span class="tier-name" style="color:var(--silver)">🥈 Серебряный</span>
+          <span class="tier-price">99 ₽/мес</span>
+        </div>
+        <ul class="tier-perks">
+          <li>1 малый грех в день — бесплатно (прощается автоматически)</li>
+          <li>Благодать от молитв ×1.1</li>
+          <li>3 эксклюзивные молитвы</li>
+          <li>Убрать рекламу индульгенций (на 3 дня)</li>
+        </ul>
+        <button class="btn-buy btn-buy-silver">Получить Серебро</button>
+      </div>
+      <div class="shop-tier gold-tier" onclick="purchase('gold')">
+        <div class="tier-header">
+          <span class="tier-name" style="color:var(--gold2)">🥇 Золотой</span>
+          <span class="tier-price">299 ₽/мес</span>
+        </div>
+        <ul class="tier-perks">
+          <li>3 малых греха в день — прощаются автоматически</li>
+          <li>Благодать от молитв ×1.25</li>
+          <li>8 эксклюзивных молитв + редкие</li>
+          <li>Индульгенции со скидкой 20%</li>
+          <li>Золотой значок в рейтинге</li>
+        </ul>
+        <button class="btn-buy btn-buy-gold">Получить Золото</button>
+      </div>
+      <div class="shop-tier plat-tier" onclick="purchase('plat')">
+        <div class="tier-header">
+          <span class="tier-name" style="color:var(--plat)">💎 Платиновый</span>
+          <span class="tier-price">799 ₽/мес</span>
+        </div>
+        <ul class="tier-perks">
+          <li>Неограниченные малые грехи</li>
+          <li>Благодать ×1.5 — ускоренное прощение</li>
+          <li>Все молитвы разблокированы</li>
+          <li>Без рекламы навсегда*</li>
+        </ul>
+        <button class="btn-buy btn-buy-plat">Получить Платину</button>
+      </div>
+      <div class="shop-tier vip-tier" onclick="purchase('vip')">
+        <div class="tier-header">
+          <span class="tier-name" style="color:var(--vip)">👑 VIP Blessed</span>
+          <span class="tier-price">2490 ₽/мес</span>
+        </div>
+        <ul class="tier-perks">
+          <li>Все грехи прощаются в конце дня автоматически</li>
+          <li>Благодать ×3 — максимальное ускорение спасения</li>
+          <li>Персональный ангел-куратор (AI чат)</li>
+          <li>VIP рейтинг — ты всегда в топ-3</li>
+          <li>NFT-сертификат "Достойный Прощения"</li>
+        </ul>
+        <div style="font-family:'Cinzel',serif;font-size:.45rem;color:rgba(212,184,150,.25);margin-top:8px">
+          * кроме "специальных предложений"
+        </div>
+        <button class="btn-buy btn-buy-vip">✨ Стать VIP ✨</button>
+      </div>
+    </div>
+    <button class="modal-close" onclick="closeShop()">✕ Остаться грешником (бесплатно)</button>
+  </div>
+</div>
+
+<!-- ── INDULGENCE FULLSCREEN ─────────────────────── -->
+<div class="indulgence-screen" id="indulgenceScreen">
+  <div class="ind-cross">✝</div>
+  <div class="ind-title">Индульгенция</div>
+  <div class="ind-sub">Специальное предложение — только сейчас</div>
+  <div class="ind-offer">
+    <div class="ind-offer-name" id="indName">Малая Индульгенция</div>
+    <div class="ind-offer-desc" id="indDesc">Прощает до 5 грехов немедленно. Действует 24 часа. Одобрено Совой.</div>
+    <span class="ind-price" id="indPrice">49 ₽</span>
+    <div class="ind-price-sub" id="indPriceSub">разовый платёж • мгновенное прощение</div>
+    <button class="btn-ind-buy" onclick="buyIndulgence()">🙏 КУПИТЬ ПРОЩЕНИЕ</button>
+  </div>
+  <div class="ind-timer" id="indTimer">⏳ Предложение истекает через: <span id="indCountdown">00:20</span></div>
+  <button class="btn-ind-skip" id="skipBtn" onclick="closeIndulgence()" style="display:none">
+    продолжить грешить бесплатно
+  </button>
+</div>
+
+<!-- ── OWL POPUP ─────────────────────────────────── -->
 <div class="owl-popup" id="owlPopup">
   <div class="owl-popup-owl">
-    <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" id="owlPopupSvg">
+    <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
       <ellipse cx="50" cy="85" rx="32" ry="38" fill="#1a2800"/>
       <ellipse cx="50" cy="88" rx="28" ry="34" fill="#0d1800"/>
       <ellipse cx="20" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(-15,20,90)"/>
@@ -648,27 +724,17 @@
       <ellipse cx="50" cy="48" rx="26" ry="26" fill="#1a2800"/>
       <polygon points="28,28 22,8 36,22" fill="#0d1800"/>
       <polygon points="72,28 78,8 64,22" fill="#0d1800"/>
-      <circle cx="38" cy="48" r="13" fill="#330000" opacity="0.8"/>
-      <circle cx="62" cy="48" r="13" fill="#330000" opacity="0.8"/>
       <circle cx="38" cy="48" r="11" fill="#ffeecc"/>
       <circle cx="62" cy="48" r="11" fill="#ffeecc"/>
-      <circle cx="38" cy="48" r="7" fill="#cc0000"/>
-      <circle cx="62" cy="48" r="7" fill="#cc0000"/>
+      <circle cx="38" cy="48" r="7" fill="#cc0000" id="popupIrisL"/>
+      <circle cx="62" cy="48" r="7" fill="#cc0000" id="popupIrisR"/>
       <circle cx="38" cy="48" r="4" fill="#000"/>
       <circle cx="62" cy="48" r="4" fill="#000"/>
       <circle cx="40" cy="46" r="1.5" fill="white"/>
       <circle cx="64" cy="46" r="1.5" fill="white"/>
       <polygon points="50,54 44,62 56,62" fill="#c9a84c"/>
-      <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none"/>
-      <line x1="40" y1="122" x2="30" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="122" x2="38" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="122" x2="46" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
-      <line x1="60" y1="122" x2="70" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
-      <line x1="60" y1="122" x2="62" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
-      <line x1="60" y1="122" x2="54" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
-      <path d="M46,88 L54,88 M50,84 L50,96" stroke="#8b0000" stroke-width="2.5" opacity="0.7"/>
-      <circle cx="38" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/>
-      <circle cx="62" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/>
+      <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none" id="popupMouth"/>
+      <path d="M46,88 L54,88 M50,84 L50,96" stroke="#8b0000" stroke-width="2.5" opacity=".7"/>
     </svg>
   </div>
   <div class="owl-popup-text" id="owlPopupText"></div>
@@ -676,159 +742,173 @@
 </div>
 
 <script>
-// ─── DATA ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════
 const SINS = [
-  { id:'pride',    icon:'👑', name:'Гордыня',      weight:3 },
-  { id:'greed',    icon:'💰', name:'Алчность',     weight:2 },
-  { id:'lust',     icon:'🔥', name:'Похоть',       weight:3 },
-  { id:'envy',     icon:'💚', name:'Зависть',      weight:2 },
-  { id:'gluttony', icon:'🍖', name:'Чревоугодие',  weight:1 },
-  { id:'wrath',    icon:'⚡', name:'Гнев',         weight:2 },
-  { id:'sloth',    icon:'😴', name:'Уныние',       weight:1 },
-  { id:'lie',      icon:'🗣️', name:'Ложь',         weight:2 },
+  {id:'pride',   icon:'👑', name:'Гордыня',     weight:3},
+  {id:'greed',   icon:'💰', name:'Алчность',    weight:2},
+  {id:'lust',    icon:'🔥', name:'Похоть',      weight:3},
+  {id:'envy',    icon:'💚', name:'Зависть',     weight:2},
+  {id:'gluttony',icon:'🍖', name:'Чревоугодие', weight:1},
+  {id:'wrath',   icon:'⚡', name:'Гнев',        weight:2},
+  {id:'sloth',   icon:'😴', name:'Уныние',      weight:1},
+  {id:'lie',     icon:'🗣️', name:'Ложь',        weight:2},
 ];
 
-const VERDICTS = [
-  [0,0,'Праведник'],[1,10,'Слегка запятнан'],[11,20,'Грешник'],
-  [21,35,'Заядлый грешник'],[36,50,'Одержимый'],
-  [51,70,'Добро пожаловать в ад'],[71,90,'Любимец дьявола'],[91,100,'Дьявол завидует'],
-];
+const TIERS = {
+  free:   {label:'FREE',     cls:'tier-free',   name:'Обычный грешник',    perks:'Базовые молитвы • Ограниченный доступ', freeSins:0, bonus:1.0},
+  silver: {label:'SILVER',   cls:'tier-silver', name:'Серебряный послушник', perks:'1 бесплатный грех/день • Благодать ×1.1', freeSins:1, bonus:1.1},
+  gold:   {label:'GOLD',     cls:'tier-gold',   name:'Золотой прихожанин', perks:'3 греха/день • Благодать ×1.25 • Рейтинг+', freeSins:3, bonus:1.25},
+  plat:   {label:'PLATINUM', cls:'tier-plat',   name:'Платиновый праведник', perks:'∞ грехи • Благодать ×1.5 • Без рекламы*', freeSins:99, bonus:1.5},
+  vip:    {label:'VIP',      cls:'tier-vip',    name:'VIP Blessed ✦',     perks:'Автопрощение • Благодать ×3 • Ангел-куратор', freeSins:99, bonus:3.0},
+};
 
 const PRAYERS_DATA = [
-  { id:'p1', badge:'Покаяние', name:'Молитва Иисусова', text:'Господи, Иисусе Христе, Сыне Божий, помилуй мя, грешного.', secs: 15 },
-  { id:'p2', badge:'Прощение', name:'Псалом 50', text:'Помилуй мя, Боже, по велицей милости Твоей и по множеству щедрот Твоих очисти беззаконие мое. Наипаче омый мя от беззакония моего, и от греха моего очисти мя.', secs: 30 },
-  { id:'p3', badge:'Смирение', name:'Молитва перед сном', text:'Господи Боже мой, аще согреших днесь словом, делом и помышлением, яко благ и Человеколюбец прости ми. Мирен сон и безмятежен даруй ми.', secs: 25 },
+  {id:'p1', badge:'Покаяние', name:'Молитва Иисусова', text:'Господи, Иисусе Христе, Сыне Божий, помилуй мя, грешного.', secs:15, tier:'free', xp:10},
+  {id:'p2', badge:'Псалом',   name:'Псалом 50',        text:'Помилуй мя, Боже, по велицей милости Твоей и по множеству щедрот Твоих очисти беззаконие мое...', secs:25, tier:'free', xp:20},
+  {id:'p3', badge:'Премиум',  name:'Молитва Ефрема Сирина', text:'Господи и Владыко живота моего, дух праздности, уныния, любоначалия и празднословия не даждь ми...', secs:30, tier:'silver', xp:35, bonus:'+5% благодати'},
+  {id:'p4', badge:'Золотая',  name:'Акафист покаянный', text:'Кондак 1: Избранной от всех родов Богоматери, вышшей всех ангел и архангел, немолчными гласы взываем...', secs:40, tier:'gold', xp:60, bonus:'+10% благодати'},
+  {id:'p5', badge:'VIP',      name:'Молитва Золотых Уст', text:'О, Пресвятая Владычице Богородице, вышши еси всех Ангел и Архангел, и всея твари честнейши...', secs:20, tier:'vip', xp:100, bonus:'+25% благодати • Множитель ×3'},
 ];
 
-const OWL_IDLE = [
-  'Я вижу тебя. Всегда.',
-  'Ты молился сегодня? Я жду.',
-  'Каждый грех записан. Мной.',
-  'Не думай, что я отвернулся.',
-  'Читай молитвы. Или последствия.',
-  'Хух. Хух. Я слежу.',
+const QUESTS = [
+  {id:'q1', icon:'🙏', name:'Помолись 2 раза',   target:2, key:'prayCount', reward:'50 XP'},
+  {id:'q2', icon:'😇', name:'Не греши 1 час',    target:1, key:'noSinHour', reward:'30 XP + Стрик'},
+  {id:'q3', icon:'⚡', name:'Исповедай 5 грехов', target:5, key:'sinTotal',  reward:'20 XP'},
+  {id:'q4', icon:'📿', name:'Прочти молитву 3×',  target:3, key:'prayCount', reward:'Индульгенция'},
 ];
 
-const OWL_SIN = [
-  '...ещё один. Я запомню.',
-  'Хорошо. Продолжай грешить.',
-  'Ад расширяется ради тебя.',
-  'Дьявол аплодирует. Сова — нет.',
-  'Ты испытываешь моё терпение.',
-  'ХУХ. Ты серьёзно?',
-  'Записано. Навечно.',
+const BOT_LEADERBOARD = [
+  {avatar:'😇', name:'Иван П.',       score:9840, badge:'GOLD'},
+  {avatar:'🙏', name:'Мария С.',      score:8120, badge:'PLAT'},
+  {avatar:'👼', name:'Николай В.',    score:7350, badge:'SILVER'},
+  {avatar:'🕊️', name:'Анна К.',       score:6800, badge:'GOLD'},
 ];
 
-const OWL_PRAYER_START = [
-  'Наконец-то. Читай. Я считаю секунды.',
-  'Хорошо. Не отвлекайся.',
-  'Читай внимательно. Я проверю.',
-  'Молитва начата. Не смей останавливаться.',
+const IND_OFFERS = [
+  {name:'Малая Индульгенция',   desc:'Прощает до 5 грехов немедленно. Действует 24 часа.',                  price:'49 ₽',  sub:'разовый платёж'},
+  {name:'Полная Индульгенция',  desc:'Все сегодняшние грехи прощены. Сова смотрит одобрительно.',           price:'149 ₽', sub:'только сейчас -30%'},
+  {name:'Недельная Индульгенция',desc:'7 дней прощения. Никаких последствий за грехи всю неделю.',          price:'399 ₽', sub:'самое выгодное предложение'},
+  {name:'Вечная Индульгенция™', desc:'Прощение на всю оставшуюся жизнь. Сертификат NFT в комплекте.',       price:'9990 ₽',sub:'единовременно • ограниченная серия'},
 ];
 
-const OWL_PRAYER_DONE = [
-  'Засчитано. Один грех прощён. Может быть.',
-  'Неплохо. Осталось ещё.',
-  'Хух. Принято. Продолжай.',
-  'Небеса слышали. Я тоже.',
-];
-
-const OWL_PRAYER_SKIP = [
-  'Ты пропустил молитву. ЯТебяЗапомнил.',
-  'Без молитвы не выйдет. Читай.',
-  'Сова недовольна. Очень.',
-  'ХУХ ХУХ ХУХ. ЧИТАЙ.',
-];
-
-const OWL_ALL_DONE = [
-  'Все молитвы прочитаны. Ты почти хороший человек. Почти.',
-  'Молодец. До завтра. Я вернусь.',
-  'Покаяние принято. Завтра не греши. (Ты согрешишь.)',
-];
-
-// ─── STATE ────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
 const today = new Date().toDateString();
 let counts = JSON.parse(localStorage.getItem('sins_counts') || '{}');
-if (localStorage.getItem('sins_date') !== today) {
-  counts = {}; localStorage.setItem('sins_date', today);
+let freeSinsUsed = parseInt(localStorage.getItem('freeSinsUsed') || '0');
+if (localStorage.getItem('sins_date') !== today) { 
+  counts = {}; 
+  freeSinsUsed = 0;
+  localStorage.setItem('sins_date', today); 
 }
 SINS.forEach(s => { if (!counts[s.id]) counts[s.id] = 0; });
 
-let prayerState = JSON.parse(localStorage.getItem('prayer_state') || '{}');
-// {p1: 'idle'|'reading'|'done', ...}
-PRAYERS_DATA.forEach(p => { if (!prayerState[p.id]) prayerState[p.id] = 'idle'; });
+let tier     = localStorage.getItem('user_tier') || 'free';
+let xp       = parseInt(localStorage.getItem('user_xp') || '0');
+let streak   = parseInt(localStorage.getItem('user_streak') || '1');
+let pState   = JSON.parse(localStorage.getItem('prayer_state2') || '{}');
+PRAYERS_DATA.forEach(p => { if (!pState[p.id]) pState[p.id] = 'idle'; });
+let questProg = JSON.parse(localStorage.getItem('quest_prog') || '{}');
+QUESTS.forEach(q => { if (!questProg[q.id]) questProg[q.id] = 0; });
 
-let activeTimer = null; // {prayerId, interval, elapsed, total}
-let owlMood = 'idle'; // idle | angry | happy | scared
+let activeTimer = null;
+let indTimer = null;
 let popupTimeout = null;
+let indCurrent = 0;
+let audioCtx = null;
 
-// ─── SAVE ─────────────────────────────────────────────
 function save() {
   localStorage.setItem('sins_counts', JSON.stringify(counts));
-  localStorage.setItem('prayer_state', JSON.stringify(prayerState));
+  localStorage.setItem('freeSinsUsed', freeSinsUsed);
+  localStorage.setItem('prayer_state2', JSON.stringify(pState));
+  localStorage.setItem('quest_prog', JSON.stringify(questProg));
+  localStorage.setItem('user_xp', xp);
+  localStorage.setItem('user_tier', tier);
 }
 
-// ─── OWL ──────────────────────────────────────────────
-function setOwlMood(mood, text) {
-  owlMood = mood;
-  const svg = document.getElementById('owlSvg');
-  svg.className.baseVal = 'owl-svg ' + mood;
-  if (text) document.getElementById('owlText').textContent = text;
+// ═══════════════════════════════════════════════════
+//  AUDIO ENGINE
+// ═══════════════════════════════════════════════════
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
-function owlSay(lines) {
-  return lines[Math.floor(Math.random() * lines.length)];
+function playTone(freq, duration, type = 'sine', vol = 0.15) {
+  if(!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
 }
 
-function owlClicked() {
-  const total = getTotal();
-  if (total === 0) {
-    showPopup(owlSay(['Пока чист. Но день не кончился.', 'Ни одного греха? Я не верю.', 'Хух. Посмотрим.']));
-  } else if (total < 5) {
-    showPopup(owlSay(['Неплохо. Но я слежу.', 'Слабый грешник. Пока.', 'Читай молитвы. Немедленно.']));
-  } else {
-    showPopup(owlSay(['Ты разочаровал меня. И Господа.', 'ХУХ ХУХ ХУХ.', 'Иди молиться. Сейчас. Я серьёзно.']));
-    setOwlMood('angry', owlSay(OWL_IDLE));
-    setTimeout(() => setOwlMood('idle', owlSay(OWL_IDLE)), 2000);
-  }
+function playSinSound() { playTone(120, 0.4, 'sawtooth', 0.08); }
+function playAbsolveSound() { playTone(800, 0.15); setTimeout(()=>playTone(1000, 0.2), 100); }
+function playBuySound() { playTone(600, 0.1, 'square', 0.05); playTone(900, 0.2, 'square', 0.05); }
+
+// ═══════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════
+function getTotal()    { return SINS.reduce((s,sin) => s+(counts[sin.id]||0), 0); }
+function getWeighted() { return SINS.reduce((s,sin) => s+(counts[sin.id]||0)*sin.weight, 0); }
+function getHellPct()  { return Math.min(100, Math.round(getWeighted() / 0.6)); }
+function getVerdict(p) {
+  const V = [[0,0,'Праведник'],[1,10,'Слегка запятнан'],[11,20,'Грешник'],[21,35,'Заядлый грешник'],[36,50,'Одержимый'],[51,70,'Добро пожаловать в ад'],[71,90,'Любимец дьявола'],[91,100,'Дьявол завидует']];
+  for(const [lo,hi,v] of V) if(p>=lo&&p<=hi) return v;
+  return V[V.length-1][2];
+}
+function tierUnlocked(t) {
+  const order = ['free','silver','gold','plat','vip'];
+  return order.indexOf(tier) >= order.indexOf(t);
+}
+function rand(arr) { return arr[Math.floor(Math.random()*arr.length); }
+
+// ═══════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════
+function renderStatus() {
+  const t = TIERS[tier];
+  document.getElementById('tierBadge').className = 'status-tier ' + t.cls;
+  document.getElementById('tierBadge').textContent = t.label;
+  document.getElementById('statusName').textContent = t.name;
+  document.getElementById('statusPerks').textContent = t.perks;
+
+  const appBadge = document.getElementById('appVersion');
+  if(tier==='free') { appBadge.textContent='Free Edition'; appBadge.style.background='#444'; }
+  else if(tier==='silver') { appBadge.textContent='Silver Edition'; appBadge.style.background='linear-gradient(135deg,#667788,#99aabb)'; }
+  else if(tier==='gold')   { appBadge.textContent='Gold Edition';   appBadge.style.background='linear-gradient(135deg,#8b6914,#c9a84c)'; }
+  else if(tier==='plat')   { appBadge.textContent='Platinum Edition';appBadge.style.background='linear-gradient(135deg,#8070a0,#c0b0e0)'; }
+  else if(tier==='vip')    { appBadge.textContent='VIP BLESSED ✦';  appBadge.style.background='linear-gradient(135deg,#880088,#ff44ff)'; }
 }
 
-function showPopup(text) {
-  clearTimeout(popupTimeout);
-  document.getElementById('owlPopupText').textContent = text;
-  const p = document.getElementById('owlPopup');
-  p.classList.add('show');
-  popupTimeout = setTimeout(() => p.classList.remove('show'), 4000);
-}
-
-function closePopup() {
-  document.getElementById('owlPopup').classList.remove('show');
-}
-
-// Idle owl talk
-setInterval(() => {
-  if (owlMood === 'idle' && Math.random() < 0.3) {
-    setOwlMood('idle', owlSay(OWL_IDLE));
-  }
-}, 8000);
-
-// ─── SINS ─────────────────────────────────────────────
-function getTotal() { return SINS.reduce((s, sin) => s + (counts[sin.id]||0), 0); }
-function getWeighted() { return SINS.reduce((s, sin) => s + (counts[sin.id]||0) * sin.weight, 0); }
-function getHellPct() { return Math.min(100, Math.round(getWeighted() / 0.6)); }
-function getVerdict(pct) {
-  for (const [lo, hi, v] of VERDICTS) if (pct >= lo && pct <= hi) return v;
-  return VERDICTS[VERDICTS.length-1][2];
+function renderXP() {
+  document.getElementById('xpNum').textContent = xp + ' XP';
+  document.getElementById('xpBar').style.width = Math.min(100, (xp % 100)) + '%';
+  document.getElementById('streakNum').textContent = streak;
 }
 
 function renderSins() {
   const grid = document.getElementById('sinsGrid');
+  const freeSinsLeft = Math.max(0, TIERS[tier].freeSins - freeSinsUsed);
   grid.innerHTML = '';
-  SINS.forEach(sin => {
+  SINS.forEach((sin, i) => {
+    const showFreeBadge = freeSinsLeft > 0 && i === 0 && tier !== 'free';
     const div = document.createElement('div');
     div.className = 'sin-card';
     div.id = 'card-'+sin.id;
     div.innerHTML = `
+      ${showFreeBadge ? '<span class="free-sin-badge">БЕСПЛАТНО</span>' : ''}
       <span class="sin-icon">${sin.icon}</span>
       <span class="sin-name">${sin.name}</span>
       <div class="sin-count" id="cnt-${sin.id}">${counts[sin.id]}</div>
@@ -840,173 +920,347 @@ function renderSins() {
   });
 }
 
-function changeSin(id, delta, e) {
-  e.stopPropagation();
-  counts[id] = Math.max(0, (counts[id]||0) + delta);
-  document.getElementById('cnt-'+id).textContent = counts[id];
-  if (delta > 0) {
-    const card = document.getElementById('card-'+id);
-    card.classList.add('flash');
-    setTimeout(() => card.classList.remove('flash'), 300);
-    spawnParticles(3);
-    setOwlMood('angry', owlSay(OWL_SIN));
-    setTimeout(() => setOwlMood('idle', owlSay(OWL_IDLE)), 3000);
-    showPopup(owlSay(OWL_SIN));
-  }
-  save();
-  renderTotal();
-  renderChart();
-}
-
 function renderTotal() {
   const t = getTotal();
   const el = document.getElementById('totalCount');
   el.textContent = t;
-  el.classList.add('bump');
-  setTimeout(() => el.classList.remove('bump'), 300);
-  const msgs = [[0,0,'Начни с чистого листа...'],[1,5,'Небольшие погрешности...'],[6,15,'Уже задумайся о молитве.'],[16,30,'Пора исповедаться.'],[31,50,'Ты идёшь прямо вниз.'],[51,100,'Ад ждёт тебя.'],[101,999,'Дьявол готовит комнату.']];
-  for (const [lo, hi, txt] of msgs) if (t >= lo && t <= hi) { document.getElementById('totalText').textContent = txt; break; }
+  el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),300);
+  const msgs = [[0,0,'Начни с чистого листа...'],[1,5,'Небольшие погрешности...'],[6,15,'Задумайся о молитве.'],[16,30,'Пора исповедаться.'],[31,50,'Ты идёшь прямо вниз.'],[51,100,'Ад ждёт тебя.'],[101,999,'Дьявол готовит комнату.']];
+  for(const [lo,hi,txt] of msgs) if(t>=lo&&t<=hi){document.getElementById('totalText').textContent=txt;break;}
 }
 
 function renderChart() {
   const pct = getHellPct();
-  const c = 408.4;
-  document.getElementById('hellArc').style.strokeDashoffset = c - c * pct / 100;
-  document.getElementById('hellPct').textContent = pct + '%';
+  const c = 376.9;
+  document.getElementById('hellArc').style.strokeDashoffset = c - c*pct/100;
+  document.getElementById('hellPct').textContent = pct+'%';
   document.getElementById('hellVerdict').textContent = getVerdict(pct);
   const bc = document.getElementById('barChart');
-  const max = Math.max(1, ...SINS.map(s => counts[s.id]||0));
-  bc.innerHTML = SINS.map(s => {
-    const h = Math.round(((counts[s.id]||0) / max) * 64);
+  const max = Math.max(1,...SINS.map(s=>counts[s.id]||0));
+  bc.innerHTML = SINS.map(s=>{
+    const h = Math.round(((counts[s.id]||0)/max)*54);
     return `<div class="bar-wrap"><div class="bar" style="height:${Math.max(2,h)}px"></div><div class="bar-label">${s.icon}</div></div>`;
   }).join('');
 }
 
-// ─── PRAYERS ──────────────────────────────────────────
-function renderPrayers() {
-  const c = document.getElementById('prayersContainer');
-  c.innerHTML = PRAYERS_DATA.map(p => {
-    const state = prayerState[p.id] || 'idle';
-    const statusText = state === 'idle' ? 'не прочитано' : state === 'reading' ? '📖 читаю...' : '✓ прочитано';
-    const btnText = state === 'done' ? '✓ Прочитано' : state === 'reading' ? 'Читаю...' : 'Читать под надзором';
-    return `<div class="prayer-card ${state === 'reading' ? 'reading' : state === 'done' ? 'done' : ''}" id="pcard-${p.id}">
-      <div class="prayer-header">
-        <span class="prayer-badge">${p.badge}</span>
-        <span class="prayer-status">${statusText}</span>
+function renderQuests() {
+  questProg.sinTotal = getTotal();
+  document.getElementById('questsList').innerHTML = QUESTS.map(q=>{
+    const prog = Math.min(q.target, questProg[q.id]||0);
+    const done = prog >= q.target;
+    const pct  = (prog/q.target)*100;
+    return `<div class="quest-item">
+      <span class="quest-icon">${q.icon}</span>
+      <div class="quest-info">
+        <div class="quest-name ${done?'quest-done':''}">${q.name}</div>
+        <div class="quest-prog-bar"><div class="quest-prog-fill" style="width:${pct}%"></div></div>
       </div>
-      <div class="prayer-text">${p.text}</div>
-      <div class="prayer-name">— ${p.name}</div>
-      <div class="prayer-progress"><div class="prayer-progress-fill" id="pprog-${p.id}"></div></div>
-      <button class="btn-read" onclick="startPrayer('${p.id}')" ${state === 'reading' ? 'disabled' : ''}>${btnText}</button>
+      <div class="quest-reward">${done?'✓':q.reward}</div>
     </div>`;
   }).join('');
 }
 
-function startPrayer(id) {
-  if (prayerState[id] === 'done') return;
-  if (activeTimer) {
-    // skip previous
-    clearInterval(activeTimer.interval);
-    showPopup(owlSay(OWL_PRAYER_SKIP));
-    setOwlMood('angry', owlSay(OWL_PRAYER_SKIP));
-    setTimeout(() => setOwlMood('idle', owlSay(OWL_IDLE)), 3000);
-    activeTimer = null;
-  }
+function renderLeaderboard() {
+  // Combine bots and user
+  let lb = [...BOT_LEADERBOARD, {avatar:'😈', name:'Ты', score: xp, badge: tier.toUpperCase(), isYou:true}];
+  lb.sort((a,b) => b.score - a.score);
+  
+  document.getElementById('lbList').innerHTML = lb.map((u,i)=>{
+    const rank = i+1;
+    return `<div class="lb-item">
+      <div class="lb-rank ${rank===1?'gold-rank':''}">${rank}</div>
+      <div class="lb-avatar">${u.avatar}</div>
+      <div class="lb-info">
+        <div class="lb-name">${u.name} ${u.isYou?'<span class="lb-badge you-marker">ВЫ</span>':''}</div>
+        <div class="lb-stat">${u.score} XP духовности</div>
+      </div>
+      <div class="lb-badge" style="font-size:.5rem;padding:2px 5px;border-radius:3px;background:rgba(100,50,200,.2);color:#aa88ff;font-family:'Cinzel',serif">${u.badge}</div>
+    </div>`;
+  }).join('');
+}
 
-  prayerState[id] = 'reading';
-  save();
-  renderPrayers();
-
-  const prayer = PRAYERS_DATA.find(p => p.id === id);
-  const total = prayer.secs;
-  let elapsed = 0;
-
-  setOwlMood('idle', owlSay(OWL_PRAYER_START));
-  showPopup(owlSay(OWL_PRAYER_START));
-
-  const fill = document.getElementById('pprog-'+id);
-  const timerFill = document.getElementById('timerFill');
-
-  const interval = setInterval(() => {
-    elapsed++;
-    const pct = Math.min(100, (elapsed / total) * 100);
-    if (fill) fill.style.width = pct + '%';
-    if (timerFill) timerFill.style.width = pct + '%';
-
-    // Owl watches — gets happier as progress goes
-    if (elapsed === Math.floor(total * 0.5)) {
-      setOwlMood('idle', 'Половина пути. Не останавливайся.');
+function renderPrayers() {
+  document.getElementById('prayersContainer').innerHTML = PRAYERS_DATA.map(p=>{
+    const unlocked = tierUnlocked(p.tier);
+    const state = pState[p.id]||'idle';
+    const statusText = state==='idle'?'не прочитано':state==='reading'?'📖 читаю...':'✓ прочитано';
+    if(!unlocked) {
+      const tierLabels = {silver:'Серебряный',gold:'Золотой',plat:'Платиновый',vip:'VIP'};
+      return `<div class="prayer-card locked-prayer">
+        <div class="prayer-header"><span class="prayer-badge premium">${p.badge}</span></div>
+        <div class="prayer-text">${p.text.substring(0,40)}...</div>
+        <div class="prayer-name">— ${p.name}</div>
+        <div class="prayer-lock-overlay">
+          <span class="prayer-lock-icon">🔒</span>
+          <span class="prayer-lock-text">Закрыто</span>
+          <span class="prayer-lock-tier">Требуется: ${tierLabels[p.tier]}</span>
+          <button style="margin-top:6px;padding:5px 12px;background:var(--blood);border:none;border-radius:5px;color:#fff;font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:1px;cursor:pointer;z-index:3;position:relative" onclick="openShop()">РАЗБЛОКИРОВАТЬ</button>
+        </div>
+      </div>`;
     }
+    return `<div class="prayer-card ${state==='reading'?'reading':state==='done'?'done':''}" id="pcard-${p.id}">
+      <div class="prayer-header">
+        <span class="prayer-badge ${p.tier!=='free'?'premium':''}">${p.badge}</span>
+        <span class="prayer-status">${statusText}</span>
+      </div>
+      <div class="prayer-text">${p.text}</div>
+      <div class="prayer-name">— ${p.name}</div>
+      ${p.bonus?`<div class="prayer-bonus">✦ ${p.bonus} (×${TIERS[tier].bonus} с вашим тарифом)</div>`:''}
+      <div class="prayer-timer" id="ptimer-${p.id}" style="display:${state==='reading'?'block':'none'}"></div>
+      <div class="prayer-progress"><div class="prayer-progress-fill" id="pprog-${p.id}"></div></div>
+      <button class="btn-read" onclick="startPrayer('${p.id}')" ${state!=='idle'?'disabled':''}>
+        ${state==='done'?'✓ Прочитано':state==='reading'?'Читаю...':'Читать под надзором совы'}
+      </button>
+    </div>`;
+  }).join('');
+}
 
-    if (elapsed >= total) {
-      clearInterval(interval);
-      activeTimer = null;
-      prayerState[id] = 'done';
-      save();
-      renderPrayers();
-      if (timerFill) timerFill.style.width = '0%';
+function renderAll() {
+  renderStatus(); renderXP(); renderSins(); renderTotal();
+  renderChart(); renderQuests(); renderLeaderboard(); renderPrayers();
+}
 
-      setOwlMood('happy', owlSay(OWL_PRAYER_DONE));
-      showPopup(owlSay(OWL_PRAYER_DONE));
-      setTimeout(() => setOwlMood('idle', owlSay(OWL_IDLE)), 3000);
-      spawnParticles(2);
-
-      // Check all done
-      const allDone = PRAYERS_DATA.every(p => prayerState[p.id] === 'done');
-      if (allDone) {
-        setTimeout(() => {
-          setOwlMood('happy', owlSay(OWL_ALL_DONE));
-          showPopup(owlSay(OWL_ALL_DONE));
-        }, 2000);
+// ═══════════════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════════════
+function changeSin(id, delta, e) {
+  e.stopPropagation();
+  initAudio();
+  
+  if(delta > 0) {
+    const freeSinsLeft = Math.max(0, TIERS[tier].freeSins - freeSinsUsed);
+    
+    if(freeSinsLeft > 0) {
+      freeSinsUsed++;
+      document.getElementById('card-'+id).classList.add('flash');
+      setTimeout(()=>document.getElementById('card-'+id).classList.remove('flash'),300);
+      playAbsolveSound();
+      setOwlMood('happy', 'Прощено по подписке. Осталось '+(TIERS[tier].freeSins - freeSinsUsed)+' бесплатных.');
+      showPopup('✦ Грех списан в рамках вашего тарифа ✦');
+    } else {
+      counts[id]++;
+      document.getElementById('card-'+id).classList.add('flash');
+      setTimeout(()=>document.getElementById('card-'+id).classList.remove('flash'),300);
+      document.getElementById('mainContainer').classList.add('shake');
+      setTimeout(()=>document.getElementById('mainContainer').classList.remove('shake'), 200);
+      playSinSound();
+      spawnParticles(3);
+      setOwlMood('angry', rand(['...ещё один. Записано.','ХУХ. Ты серьёзно?','Дьявол аплодирует.','Ад расширяется ради тебя.','Купи индульгенцию. Тебе нужно.']));
+      showPopup(rand(['Грех зафиксирован. Сова недовольна.','Ещё один? Молитвы ждут.','Это будет стоить тебе... или денег.']));
+      
+      // Trigger ad every 5 sins
+      if(tier==='free' && getTotal()>0 && getTotal()%5===0) {
+        setTimeout(()=>showIndulgence(), 1500);
       }
     }
-  }, 1000);
-
-  activeTimer = { prayerId: id, interval, elapsed, total };
+    questProg.sinTotal = getTotal();
+  } else {
+    if (counts[id] > 0) {
+      counts[id]--;
+      playAbsolveSound();
+    }
+  }
+  
+  document.getElementById('cnt-'+id).textContent = counts[id];
+  save();
+  renderTotal(); renderChart(); renderQuests(); renderLeaderboard(); renderSins();
 }
 
-// ─── PARTICLES ────────────────────────────────────────
-function spawnParticles(n) {
-  for (let i = 0; i < n; i++) {
-    setTimeout(() => {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const x = Math.random() * window.innerWidth;
-      const drift = (Math.random()-0.5)*80 + 'px';
-      p.style.cssText = `left:${x}px; --drift:${drift}; animation-duration:${2+Math.random()*2}s; width:${3+Math.random()*4}px; height:${3+Math.random()*4}px;`;
-      document.getElementById('particles').appendChild(p);
-      setTimeout(() => p.remove(), 4500);
-    }, i * 150);
+function startPrayer(id) {
+  if(pState[id]==='done') return;
+  initAudio();
+  if(activeTimer) { clearInterval(activeTimer.interval); activeTimer=null; }
+  pState[id]='reading'; save(); renderPrayers();
+  const prayer = PRAYERS_DATA.find(p=>p.id===id);
+  const total = prayer.secs;
+  let elapsed=0;
+  setOwlMood('idle', rand(['Читай. Я считаю.','Начато. Не останавливайся.','Молитва начата. Сова наблюдает.']));
+  showPopup('Читай внимательно. Я засеку время.');
+  
+  const timerEl = document.getElementById('ptimer-'+id);
+  timerEl.textContent = total + 's';
+  
+  const interval = setInterval(()=>{
+    elapsed++;
+    const remaining = total - elapsed;
+    if(timerEl) timerEl.textContent = remaining + 's';
+    
+    const pct = Math.min(100,(elapsed/total)*100);
+    const fill = document.getElementById('pprog-'+id);
+    if(fill) fill.style.width = pct+'%';
+    
+    if(elapsed>=total) {
+      clearInterval(interval); activeTimer=null;
+      if(timerEl) timerEl.style.display = 'none';
+      pState[id]='done';
+      xp += Math.round(prayer.xp * TIERS[tier].bonus);
+      questProg.prayCount = (questProg.prayCount||0)+1;
+      save(); renderPrayers(); renderXP(); renderQuests(); renderLeaderboard();
+      playAbsolveSound();
+      setOwlMood('happy', rand(['Засчитано. Может быть.','Небеса слышали.','Хух. Принято.','Неплохо. Осталось ещё.']));
+      showPopup(`+${Math.round(prayer.xp * TIERS[tier].bonus)} XP духовности ✦`);
+      spawnParticles(2);
+    }
+  }, 1000);
+  activeTimer = {interval};
+}
+
+// ═══════════════════════════════════════════════════
+//  SHOP
+// ═══════════════════════════════════════════════════
+function openShop() { document.getElementById('shopModal').classList.add('show'); }
+function closeShop(){ document.getElementById('shopModal').classList.remove('show'); }
+
+function purchase(t) {
+  initAudio();
+  playBuySound();
+  tier = t; save();
+  closeShop();
+  renderAll();
+  const msgs = {
+    silver:'Серебро получено! 1 грех/день прощается автоматически.',
+    gold:  'Золото! 3 греха/день и благодать ×1.25. Мудрый выбор.',
+    plat:  'Платина! Бесконечные грехи, ×1.5 благодати. Платина смотрит одобрительно.',
+    vip:   'VIP BLESSED. Все грехи прощены. Ангел назначен. Сова в восторге.',
+  };
+  setOwlMood('happy', msgs[t]);
+  showPopup('Покупка подтверждена. Добро пожаловать в ' + TIERS[t].name + '.');
+  xp += 50; renderXP();
+}
+
+// ═══════════════════════════════════════════════════
+//  INDULGENCE
+// ═══════════════════════════════════════════════════
+function showIndulgence() {
+  if(tier !== 'free') return; // No ads for premiums
+  
+  indCurrent = Math.floor(Math.random()*IND_OFFERS.length);
+  const offer = IND_OFFERS[indCurrent];
+  document.getElementById('indName').textContent    = offer.name;
+  document.getElementById('indDesc').textContent    = offer.desc;
+  document.getElementById('indPrice').textContent   = offer.price;
+  document.getElementById('indPriceSub').textContent= offer.sub;
+  document.getElementById('skipBtn').style.display  = 'none';
+  document.getElementById('indTimer').style.display = 'block';
+
+  const screen = document.getElementById('indulgenceScreen');
+  screen.classList.add('show');
+
+  let secs = 20; // 20 seconds of pure dark pattern torture
+  let countdown = secs;
+  document.getElementById('indCountdown').textContent = '0'+Math.floor(countdown/60)+':'+String(countdown%60).padStart(2,'0');
+
+  clearInterval(indTimer);
+  indTimer = setInterval(()=>{
+    countdown--;
+    document.getElementById('indCountdown').textContent = '0'+Math.floor(countdown/60)+':'+String(countdown%60).padStart(2,'0');
+    if(countdown<=0){ clearInterval(indTimer); document.getElementById('skipBtn').style.display='block'; }
+  }, 1000);
+}
+
+function buyIndulgence() {
+  initAudio(); playBuySound();
+  closeIndulgence();
+  const total = getTotal();
+  if(total>0) {
+    SINS.forEach(s=>counts[s.id]=0);
+    save(); renderAll();
+  }
+  setOwlMood('happy','Индульгенция принята. Все грехи прощены. До следующего раза.');
+  showPopup('Все грехи прощены! Сова одобряет вашу щедрость.');
+  spawnParticles(8);
+  xp += 25; renderXP();
+}
+
+function closeIndulgence() {
+  clearInterval(indTimer);
+  document.getElementById('indulgenceScreen').classList.remove('show');
+  setOwlMood('angry', 'Жадность — тоже грех. Я записала.');
+}
+
+// ═══════════════════════════════════════════════════
+//  OWL DYNAMICS
+// ═══════════════════════════════════════════════════
+const MOUTHS = { idle:'M40,68 Q50,62 60,68', angry:'M40,70 Q50,65 60,70', happy:'M40,64 Q50,72 60,64' };
+const IRIS = { idle:'#cc0000', angry:'#ff0000', happy:'#00cc00' };
+
+function setOwlMood(mood, text) {
+  const svg = document.getElementById('owlSvg');
+  svg.className.baseVal = 'owl-svg ' + mood;
+  
+  // Update main owl
+  document.getElementById('owlMouth').setAttribute('d', MOUTHS[mood]||MOUTHS.idle);
+  const c = IRIS[mood]||'#cc0000';
+  document.getElementById('irisL').setAttribute('fill',c);
+  document.getElementById('irisR').setAttribute('fill',c);
+  
+  // Update popup owl
+  document.getElementById('popupMouth').setAttribute('d', MOUTHS[mood]||MOUTHS.idle);
+  document.getElementById('popupIrisL').setAttribute('fill',c);
+  document.getElementById('popupIrisR').setAttribute('fill',c);
+  
+  if(text) document.getElementById('owlText').textContent = text;
+}
+
+function showPopup(text) {
+  clearTimeout(popupTimeout);
+  document.getElementById('owlPopupText').textContent = text;
+  document.getElementById('owlPopup').classList.add('show');
+  popupTimeout = setTimeout(()=>document.getElementById('owlPopup').classList.remove('show'), 4000);
+}
+function closePopup() { document.getElementById('owlPopup').classList.remove('show'); }
+
+function owlClicked() {
+  initAudio();
+  const t = getTotal();
+  if(tier==='free' && t>3) {
+    showPopup('Так много грехов... Может, пора на Серебро?');
+    openShop();
+  } else if(t===0) {
+    showPopup(rand(['Пока чист. Но день не кончился.','Ни одного греха? Не верю.','ХУХ. Посмотрим.']));
+  } else {
+    showPopup(rand(['Я вижу тебя. Всегда.','Читай молитвы. Или последствия.','Сова не дремлет.']));
   }
 }
+setInterval(()=>{
+  const idlePhrases = ['Я слежу.','Читай молитвы.','Сова не дремлет.','Хух. Хух.','Ты молился сегодня?'];
+  if(Math.random()<0.25) setOwlMood('idle', rand(idlePhrases));
+}, 9000);
 
-setInterval(() => { if (getTotal() > 0) spawnParticles(1); }, 1200);
+// ═══════════════════════════════════════════════════
+//  MISC
+// ═══════════════════════════════════════════════════
+function spawnParticles(n) {
+  for(let i=0;i<n;i++) setTimeout(()=>{
+    const p=document.createElement('div'); p.className='particle';
+    const drift=(Math.random()-.5)*80+'px';
+    p.style.cssText=`left:${Math.random()*window.innerWidth}px;--drift:${drift};animation-duration:${2+Math.random()*2}s;width:${3+Math.random()*4}px;height:${3+Math.random()*4}px;`;
+    document.getElementById('particles').appendChild(p);
+    setTimeout(()=>p.remove(),4500);
+  }, i*150);
+}
+setInterval(()=>{ if(getTotal()>0) spawnParticles(1); }, 1200);
 
-// ─── RESET ────────────────────────────────────────────
+function scrollTop() { window.scrollTo({top:0,behavior:'smooth'}); }
+function scrollToEl(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
 function resetDay() {
-  if (!confirm('Начать новый день и сбросить всё?')) return;
-  if (activeTimer) { clearInterval(activeTimer.interval); activeTimer = null; }
-  SINS.forEach(s => counts[s.id] = 0);
-  PRAYERS_DATA.forEach(p => prayerState[p.id] = 'idle');
-  save();
-  renderSins();
-  renderTotal();
-  renderChart();
-  renderPrayers();
-  setOwlMood('idle', 'Новый день. Новый шанс не грешить. Хух.');
+  if(!confirm('Новый день? Сбросить всё?')) return;
+  if(activeTimer){clearInterval(activeTimer.interval);activeTimer=null;}
+  SINS.forEach(s=>counts[s.id]=0);
+  freeSinsUsed = 0;
+  PRAYERS_DATA.forEach(p=>pState[p.id]='idle');
+  QUESTS.forEach(q=>questProg[q.id]=0);
+  save(); renderAll();
+  setOwlMood('idle','Новый день. Новый шанс. Я слежу.');
 }
 
-// ─── INIT ─────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────
 document.getElementById('dateDisplay').textContent =
-  new Date().toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-
-renderSins();
-renderTotal();
-renderChart();
-renderPrayers();
-
-// Initial owl greeting
-setTimeout(() => showPopup('Здравствуй, грешник. Я слежу за тобой.'), 1200);
+  new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+renderAll();
+setTimeout(()=>showPopup('Добро пожаловать. Твои грехи — моя забота.'), 1200);
+setTimeout(()=>{ if(tier==='free') showIndulgence(); }, 15000);
 </script>
 </body>
 </html>
