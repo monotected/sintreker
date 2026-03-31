@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Счётчик Грехов</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blood: #8b0000;
+    --ember: #c0392b;
+    --gold: #c9a84c;
+    --parchment: #1a0a00;
+    --ash: #2d1a0e;
+    --smoke: #3d2010;
+    --bone: #d4b896;
+    --hell-glow: #ff4500;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0400;
+    color: var(--bone);
+    font-family: 'Crimson Text', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 40vh;
+    background: radial-gradient(ellipse at 50% 100%, rgba(200,50,0,0.25) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: hellglow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes hellglow {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+  }
+
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    text-align: center;
+    padding: 24px 0 16px;
+  }
+
+  .title-main {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 3rem;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(200,0,0,0.6), 0 0 40px rgba(200,0,0,0.3);
+    line-height: 1;
+  }
+
+  .title-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-top: 6px;
+    opacity: 0.8;
+  }
+
+  .date-display {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: rgba(212,184,150,0.4);
+    margin-top: 6px;
+    letter-spacing: 2px;
+  }
+
+  hr.ornament {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 14px 0;
+    opacity: 0.4;
+  }
+
+  /* ═══ OWL ═══════════════════════════════════════════ */
+  .owl-section {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .owl-bubble {
+    background: linear-gradient(135deg, #0d0500, #1a0a00);
+    border: 1px solid rgba(139,0,0,0.5);
+    border-radius: 12px;
+    padding: 14px 16px 14px 80px;
+    min-height: 70px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .owl-bubble::after {
+    content: '';
+    position: absolute;
+    left: 65px; bottom: -8px;
+    width: 0; height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid rgba(139,0,0,0.5);
+  }
+
+  .owl-text {
+    font-style: italic;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgba(212,184,150,0.9);
+    transition: opacity 0.3s;
+  }
+
+  /* SVG OWL */
+  .owl-container {
+    position: absolute;
+    left: 8px;
+    bottom: -5px;
+    width: 68px;
+    height: 90px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .owl-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 8px rgba(200,0,0,0.4));
+    transition: transform 0.15s;
+  }
+
+  .owl-container:active .owl-svg { transform: scale(0.92); }
+
+  /* Owl animations */
+  @keyframes owl-idle {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+  }
+  @keyframes owl-angry {
+    0%,100% { transform: rotate(0deg); }
+    25%  { transform: rotate(-8deg) scale(1.05); }
+    75%  { transform: rotate(8deg) scale(1.05); }
+  }
+  @keyframes owl-happy {
+    0%,100% { transform: scale(1) rotate(0deg); }
+    30%  { transform: scale(1.12) rotate(-5deg); }
+    60%  { transform: scale(1.12) rotate(5deg); }
+  }
+  @keyframes owl-scared {
+    0%,100% { transform: translateX(0); }
+    20%  { transform: translateX(-6px); }
+    40%  { transform: translateX(6px); }
+    60%  { transform: translateX(-4px); }
+    80%  { transform: translateX(4px); }
+  }
+  @keyframes eye-blink {
+    0%,90%,100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+
+  .owl-svg.idle   { animation: owl-idle 2.5s ease-in-out infinite; }
+  .owl-svg.angry  { animation: owl-angry 0.4s ease-in-out infinite; }
+  .owl-svg.happy  { animation: owl-happy 0.5s ease-in-out infinite; }
+  .owl-svg.scared { animation: owl-scared 0.3s ease-in-out 3; }
+
+  .owl-eye { animation: eye-blink 4s ease-in-out infinite; transform-origin: center; }
+  .owl-eye-r { animation: eye-blink 4s ease-in-out 0.2s infinite; transform-origin: center; }
+
+  /* Prayer timer */
+  .prayer-timer-bar {
+    height: 3px;
+    background: rgba(139,0,0,0.2);
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .prayer-timer-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, var(--blood), var(--ember));
+    border-radius: 2px;
+    transition: width 0.5s linear;
+  }
+
+  /* ═══ SINS GRID ════════════════════════════════════ */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .sin-card {
+    background: linear-gradient(135deg, var(--ash), var(--parchment));
+    border: 1px solid rgba(139,0,0,0.4);
+    border-radius: 8px;
+    padding: 12px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sin-card.flash {
+    border-color: var(--ember);
+    transform: scale(0.96);
+    box-shadow: 0 0 16px rgba(200,0,0,0.5);
+    background: linear-gradient(135deg, #3d0000, #1a0a00);
+  }
+
+  .sin-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+  .sin-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--gold);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .sin-count {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 2rem;
+    color: var(--blood);
+    text-shadow: 0 0 10px rgba(200,0,0,0.4);
+    line-height: 1;
+  }
+  .sin-btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .btn-minus, .btn-plus {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(139,0,0,0.6);
+    background: rgba(100,0,0,0.3);
+    color: var(--bone);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1;
+  }
+  .btn-plus { background: rgba(139,0,0,0.45); color: #ff8080; }
+  .btn-minus:active, .btn-plus:active { transform: scale(0.82); }
+
+  /* ═══ TOTAL ════════════════════════════════════════ */
+  .total-block {
+    background: linear-gradient(135deg, #1a0000, var(--ash));
+    border: 1px solid var(--blood);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 18px;
+    box-shadow: 0 0 30px rgba(139,0,0,0.15);
+  }
+  .total-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    color: rgba(212,184,150,0.4);
+    text-transform: uppercase;
+  }
+  .total-number {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 4rem;
+    color: var(--ember);
+    text-shadow: 0 0 20px rgba(200,0,0,0.7);
+    line-height: 1;
+    transition: all 0.3s;
+  }
+  .total-number.bump { transform: scale(1.2); color: #ff2200; }
+  .total-text { font-style: italic; font-size: 0.85rem; color: rgba(212,184,150,0.55); margin-top: 4px; }
+
+  /* ═══ CHART ════════════════════════════════════════ */
+  .chart-section {
+    background: linear-gradient(135deg, var(--parchment), var(--ash));
+    border: 1px solid rgba(139,0,0,0.3);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .hell-meter {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    margin: 0 auto 14px;
+  }
+  .hell-meter svg { transform: rotate(-90deg); }
+  .hell-meter-label {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .hell-pct {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 2.1rem;
+    color: var(--ember);
+    text-shadow: 0 0 12px rgba(200,0,0,0.6);
+    display: block;
+  }
+  .hell-verdict {
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    letter-spacing: 1px;
+    color: var(--gold);
+    text-transform: uppercase;
+    display: block;
+  }
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 70px;
+    gap: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(139,0,0,0.3);
+    margin-bottom: 6px;
+  }
+  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .bar {
+    width: 100%; max-width: 28px;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(to top, var(--blood), var(--ember));
+    min-height: 2px;
+    transition: height 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 0 8px rgba(200,0,0,0.3);
+  }
+  .bar-label { font-size: 0.6rem; color: rgba(212,184,150,0.4); margin-top: 3px; text-align: center; }
+
+  /* ═══ PRAYERS ══════════════════════════════════════ */
+  .prayers-section {
+    background: linear-gradient(135deg, #0d0a00, var(--ash));
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .prayer-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  .prayer-card:last-child { margin-bottom: 0; }
+  .prayer-card.reading { border-color: var(--gold); box-shadow: 0 0 12px rgba(201,168,76,0.2); }
+  .prayer-card.done { border-color: #2d5a2d; background: rgba(0,50,0,0.2); }
+
+  .prayer-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .prayer-badge {
+    display: inline-block;
+    background: var(--blood);
+    color: var(--bone);
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+  .prayer-status {
+    font-size: 0.75rem;
+    color: rgba(212,184,150,0.4);
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+  }
+  .prayer-card.reading .prayer-status { color: var(--gold); }
+  .prayer-card.done .prayer-status { color: #4a9a4a; }
+
+  .prayer-text { font-style: italic; font-size: 0.88rem; line-height: 1.6; color: rgba(212,184,150,0.82); }
+  .prayer-name { font-family: 'Cinzel', serif; font-size: 0.6rem; color: var(--gold); letter-spacing: 2px; margin-top: 8px; opacity: 0.6; }
+
+  .prayer-progress {
+    height: 2px;
+    background: rgba(201,168,76,0.1);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .prayer-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, var(--gold), #ffdd88);
+    border-radius: 2px;
+    transition: width 0.3s linear;
+  }
+  .prayer-card.done .prayer-progress-fill { width: 100% !important; background: #4a9a4a; }
+
+  /* Read button */
+  .btn-read {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-read:hover { background: rgba(201,168,76,0.2); }
+  .prayer-card.done .btn-read { color: #4a9a4a; border-color: rgba(74,154,74,0.3); }
+
+  /* ═══ RESET ════════════════════════════════════════ */
+  .reset-btn {
+    display: block; width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #1a0000, #2d0000);
+    border: 1px solid rgba(139,0,0,0.4);
+    border-radius: 8px;
+    color: rgba(212,184,150,0.4);
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .reset-btn:active { background: rgba(139,0,0,0.2); color: var(--bone); }
+
+  /* ═══ PARTICLES ════════════════════════════════════ */
+  .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .particle {
+    position: absolute; bottom: -20px;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--hell-glow);
+    opacity: 0;
+    animation: float-up linear infinite;
+    box-shadow: 0 0 6px var(--hell-glow);
+  }
+  @keyframes float-up {
+    0%   { transform: translateY(0) scale(1); opacity: 0; }
+    20%  { opacity: 0.6; }
+    80%  { opacity: 0.3; }
+    100% { transform: translateY(-60vh) translateX(var(--drift)) scale(0.2); opacity: 0; }
+  }
+
+  /* ═══ OWL POPUP ════════════════════════════════════ */
+  .owl-popup {
+    position: fixed;
+    bottom: -200px;
+    left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 360px;
+    background: linear-gradient(135deg, #0d0500, #1f0a00);
+    border: 2px solid var(--blood);
+    border-radius: 16px;
+    padding: 20px 20px 20px 90px;
+    box-shadow: 0 0 40px rgba(200,0,0,0.4);
+    z-index: 100;
+    transition: bottom 0.5s cubic-bezier(0.34,1.3,0.64,1);
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+  }
+  .owl-popup.show { bottom: 20px; }
+  .owl-popup-owl {
+    position: absolute;
+    left: 10px; bottom: 0;
+    width: 75px; height: 95px;
+  }
+  .owl-popup-text {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--bone);
+  }
+  .owl-popup-close {
+    position: absolute;
+    top: 8px; right: 10px;
+    background: none; border: none;
+    color: rgba(212,184,150,0.4);
+    font-size: 1rem; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="container">
+
+  <header>
+    <div class="title-main">Грехи</div>
+    <div class="title-sub">Ежедневный учёт</div>
+    <div class="date-display" id="dateDisplay"></div>
+  </header>
+
+  <hr class="ornament">
+
+  <!-- OWL SECTION -->
+  <div class="owl-section">
+    <div class="owl-bubble">
+      <div class="owl-text" id="owlText">Здравствуй, грешник. Я слежу за каждым твоим движением.</div>
+    </div>
+    <div class="prayer-timer-bar"><div class="prayer-timer-fill" id="timerFill"></div></div>
+    <div class="owl-container" onclick="owlClicked()">
+      <svg class="owl-svg idle" id="owlSvg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body -->
+        <ellipse cx="50" cy="85" rx="32" ry="38" fill="#1a2800"/>
+        <!-- Dark feather overlay -->
+        <ellipse cx="50" cy="88" rx="28" ry="34" fill="#0d1800"/>
+        <!-- Wing left -->
+        <ellipse cx="20" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(-15,20,90)"/>
+        <!-- Wing right -->
+        <ellipse cx="80" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(15,80,90)"/>
+        <!-- Belly -->
+        <ellipse cx="50" cy="95" rx="18" ry="22" fill="#2d4400"/>
+        <!-- Head -->
+        <ellipse cx="50" cy="48" rx="26" ry="26" fill="#1a2800"/>
+        <!-- Ear tufts -->
+        <polygon points="28,28 22,8 36,22" fill="#0d1800"/>
+        <polygon points="72,28 78,8 64,22" fill="#0d1800"/>
+        <!-- Evil red glow around eyes -->
+        <circle cx="38" cy="48" r="13" fill="#330000" opacity="0.8"/>
+        <circle cx="62" cy="48" r="13" fill="#330000" opacity="0.8"/>
+        <!-- Eye whites -->
+        <circle cx="38" cy="48" r="11" fill="#ffeecc"/>
+        <circle cx="62" cy="48" r="11" fill="#ffeecc"/>
+        <!-- Eye iris - RED -->
+        <circle cx="38" cy="48" r="7" fill="#cc0000" id="irisL"/>
+        <circle cx="62" cy="48" r="7" fill="#cc0000" id="irisR"/>
+        <!-- Pupils -->
+        <circle cx="38" cy="48" r="4" fill="#000" class="owl-eye"/>
+        <circle cx="62" cy="48" r="4" fill="#000" class="owl-eye-r"/>
+        <!-- Evil glint -->
+        <circle cx="40" cy="46" r="1.5" fill="white"/>
+        <circle cx="64" cy="46" r="1.5" fill="white"/>
+        <!-- Beak -->
+        <polygon points="50,54 44,62 56,62" fill="#c9a84c"/>
+        <!-- Duolingo-style smile becomes evil frown -->
+        <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none"/>
+        <!-- Feet -->
+        <line x1="40" y1="122" x2="30" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="122" x2="38" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="122" x2="46" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="60" y1="122" x2="70" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="60" y1="122" x2="62" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="60" y1="122" x2="54" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <!-- Chest cross -->
+        <path d="M46,88 L54,88 M50,84 L50,96" stroke="#8b0000" stroke-width="2.5" opacity="0.7"/>
+        <!-- Red glow eyes effect -->
+        <circle cx="38" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/>
+        <circle cx="62" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SIN CARDS -->
+  <div class="sins-grid" id="sinsGrid"></div>
+
+  <!-- TOTAL -->
+  <div class="total-block">
+    <div class="total-label">Всего грехов сегодня</div>
+    <div class="total-number" id="totalCount">0</div>
+    <div class="total-text" id="totalText">Начни с чистого листа...</div>
+  </div>
+
+  <hr class="ornament">
+
+  <!-- CHART -->
+  <div class="chart-section">
+    <div class="section-title">☩ Путь к Аду ☩</div>
+    <div class="hell-meter">
+      <svg width="170" height="170" viewBox="0 0 170 170">
+        <circle cx="85" cy="85" r="65" fill="none" stroke="rgba(139,0,0,0.2)" stroke-width="13"/>
+        <circle cx="85" cy="85" r="65" fill="none"
+          stroke="url(#fireGrad)" stroke-width="13"
+          stroke-linecap="round"
+          stroke-dasharray="408.4"
+          stroke-dashoffset="408.4"
+          id="hellArc"
+          style="transition: stroke-dashoffset 0.8s cubic-bezier(0.34,1.1,0.64,1)"/>
+        <defs>
+          <linearGradient id="fireGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#8b0000"/>
+            <stop offset="100%" stop-color="#ff4500"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="hell-meter-label">
+        <span class="hell-pct" id="hellPct">0%</span>
+        <span class="hell-verdict" id="hellVerdict">Праведник</span>
+      </div>
+    </div>
+    <div class="bar-chart" id="barChart"></div>
+  </div>
+
+  <!-- PRAYERS -->
+  <div class="prayers-section">
+    <div class="section-title">✝ Покаяние — читай под надзором ✝</div>
+    <div id="prayersContainer"></div>
+  </div>
+
+  <button class="reset-btn" onclick="resetDay()">⊕ Новый День — Очистить Счётчик ⊕</button>
+
+</div>
+
+<!-- OWL POPUP -->
+<div class="owl-popup" id="owlPopup">
+  <div class="owl-popup-owl">
+    <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" id="owlPopupSvg">
+      <ellipse cx="50" cy="85" rx="32" ry="38" fill="#1a2800"/>
+      <ellipse cx="50" cy="88" rx="28" ry="34" fill="#0d1800"/>
+      <ellipse cx="20" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(-15,20,90)"/>
+      <ellipse cx="80" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(15,80,90)"/>
+      <ellipse cx="50" cy="95" rx="18" ry="22" fill="#2d4400"/>
+      <ellipse cx="50" cy="48" rx="26" ry="26" fill="#1a2800"/>
+      <polygon points="28,28 22,8 36,22" fill="#0d1800"/>
+      <polygon points="72,28 78,8 64,22" fill="#0d1800"/>
+      <circle cx="38" cy="48" r="13" fill="#330000" opacity="0.8"/>
+      <circle cx="62" cy="48" r="13" fill="#330000" opacity="0.8"/>
+      <circle cx="38" cy="48" r="11" fill="#ffeecc"/>
+      <circle cx="62" cy="48" r="11" fill="#ffeecc"/>
+      <circle cx="38" cy="48" r="7" fill="#cc0000"/>
+      <circle cx="62" cy="48" r="7" fill="#cc0000"/>
+      <circle cx="38" cy="48" r="4" fill="#000"/>
+      <circle cx="62" cy="48" r="4" fill="#000"/>
+      <circle cx="40" cy="46" r="1.5" fill="white"/>
+      <circle cx="64" cy="46" r="1.5" fill="white"/>
+      <polygon points="50,54 44,62 56,62" fill="#c9a84c"/>
+      <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2" fill="none"/>
+      <line x1="40" y1="122" x2="30" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+      <line x1="40" y1="122" x2="38" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+      <line x1="40" y1="122" x2="46" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+      <line x1="60" y1="122" x2="70" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+      <line x1="60" y1="122" x2="62" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+      <line x1="60" y1="122" x2="54" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+      <path d="M46,88 L54,88 M50,84 L50,96" stroke="#8b0000" stroke-width="2.5" opacity="0.7"/>
+      <circle cx="38" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/>
+      <circle cx="62" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="owl-popup-text" id="owlPopupText"></div>
+  <button class="owl-popup-close" onclick="closePopup()">✕</button>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────
+const SINS = [
+  { id:'pride',    icon:'👑', name:'Гордыня',      weight:3 },
+  { id:'greed',    icon:'💰', name:'Алчность',     weight:2 },
+  { id:'lust',     icon:'🔥', name:'Похоть',       weight:3 },
+  { id:'envy',     icon:'💚', name:'Зависть',      weight:2 },
+  { id:'gluttony', icon:'🍖', name:'Чревоугодие',  weight:1 },
+  { id:'wrath',    icon:'⚡', name:'Гнев',         weight:2 },
+  { id:'sloth',    icon:'😴', name:'Уныние',       weight:1 },
+  { id:'lie',      icon:'🗣️', name:'Ложь',         weight:2 },
+];
+
+const VERDICTS = [
+  [0,0,'Праведник'],[1,10,'Слегка запятнан'],[11,20,'Грешник'],
+  [21,35,'Заядлый грешник'],[36,50,'Одержимый'],
+  [51,70,'Добро пожаловать в ад'],[71,90,'Любимец дьявола'],[91,100,'Дьявол завидует'],
+];
+
+const PRAYERS_DATA = [
+  { id:'p1', badge:'Покаяние', name:'Молитва Иисусова', text:'Господи, Иисусе Христе, Сыне Божий, помилуй мя, грешного.', secs: 15 },
+  { id:'p2', badge:'Прощение', name:'Псалом 50', text:'Помилуй мя, Боже, по велицей милости Твоей и по множеству щедрот Твоих очисти беззаконие мое. Наипаче омый мя от беззакония моего, и от греха моего очисти мя.', secs: 30 },
+  { id:'p3', badge:'Смирение', name:'Молитва перед сном', text:'Господи Боже мой, аще согреших днесь словом, делом и помышлением, яко благ и Человеколюбец прости ми. Мирен сон и безмятежен даруй ми.', secs: 25 },
+];
+
+const OWL_IDLE = [
+  'Я вижу тебя. Всегда.',
+  'Ты молился сегодня? Я жду.',
+  'Каждый грех записан. Мной.',
+  'Не думай, что я отвернулся.',
+  'Читай молитвы. Или последствия.',
+  'Хух. Хух. Я слежу.',
+];
+
+const OWL_SIN = [
+  '...ещё один. Я запомню.',
+  'Хорошо. Продолжай грешить.',
+  'Ад расширяется ради тебя.',
+  'Дьявол аплодирует. Сова — нет.',
+  'Ты испытываешь моё терпение.',
+  'ХУХ. Ты серьёзно?',
+  'Записано. Навечно.',
+];
+
+const OWL_PRAYER_START = [
+  'Наконец-то. Читай. Я считаю секунды.',
+  'Хорошо. Не отвлекайся.',
+  'Читай внимательно. Я проверю.',
+  'Молитва начата. Не смей останавливаться.',
+];
+
+const OWL_PRAYER_DONE = [
+  'Засчитано. Один грех прощён. Может быть.',
+  'Неплохо. Осталось ещё.',
+  'Хух. Принято. Продолжай.',
+  'Небеса слышали. Я тоже.',
+];
+
+const OWL_PRAYER_SKIP = [
+  'Ты пропустил молитву. ЯТебяЗапомнил.',
+  'Без молитвы не выйдет. Читай.',
+  'Сова недовольна. Очень.',
+  'ХУХ ХУХ ХУХ. ЧИТАЙ.',
+];
+
+const OWL_ALL_DONE = [
+  'Все молитвы прочитаны. Ты почти хороший человек. Почти.',
+  'Молодец. До завтра. Я вернусь.',
+  'Покаяние принято. Завтра не греши. (Ты согрешишь.)',
+];
+
+// ─── STATE ────────────────────────────────────────────
+const today = new Date().toDateString();
+let counts = JSON.parse(localStorage.getItem('sins_counts') || '{}');
+if (localStorage.getItem('sins_date') !== today) {
+  counts = {}; localStorage.setItem('sins_date', today);
+}
+SINS.forEach(s => { if (!counts[s.id]) counts[s.id] = 0; });
+
+let prayerState = JSON.parse(localStorage.getItem('prayer_state') || '{}');
+// {p1: 'idle'|'reading'|'done', ...}
+PRAYERS_DATA.forEach(p => { if (!prayerState[p.id]) prayerState[p.id] = 'idle'; });
+
+let activeTimer = null; // {prayerId, interval, elapsed, total}
+let owlMood = 'idle'; // idle | angry | happy | scared
+let popupTimeout = null;
+
+// ─── SAVE ─────────────────────────────────────────────
+function save() {
+  localStorage.setItem('sins_counts', JSON.stringify(counts));
+  localStorage.setItem('prayer_state', JSON.stringify(prayerState));
+}
+
+// ─── OWL ──────────────────────────────────────────────
+function setOwlMood(mood, text) {
+  owlMood = mood;
+  const svg = document.getElementById('owlSvg');
+  svg.className.baseVal = 'owl-svg ' + mood;
+  if (text) document.getElementById('owlText').textContent = text;
+}
+
+function owlSay(lines) {
+  return lines[Math.floor(Math.random() * lines.length)];
+}
+
+function owlClicked() {
+  const total = getTotal();
+  if (total === 0) {
+    showPopup(owlSay(['Пока чист. Но день не кончился.', 'Ни одного греха? Я не верю.', 'Хух. Посмотрим.']));
+  } else if (total < 5) {
+    showPopup(owlSay(['Неплохо. Но я слежу.', 'Слабый грешник. Пока.', 'Читай молитвы. Немедленно.']));
+  } else {
+    showPopup(owlSay(['Ты разочаровал меня. И Господа.', 'ХУХ ХУХ ХУХ.', 'Иди молиться. Сейчас. Я серьёзно.']));
+    setOwlMood('angry', owlSay(OWL_IDLE));
+    setTimeout(() => setOwlMood('idle', owlSay(OWL_IDLE)), 2000);
+  }
+}
+
+function showPopup(text) {
+  clearTimeout(popupTimeout);
+  document.getElementById('owlPopupText').textContent = text;
+  const p = document.getElementById('owlPopup');
+  p.classList.add('show');
+  popupTimeout = setTimeout(() => p.classList.remove('show'), 4000);
+}
+
+function closePopup() {
+  document.getElementById('owlPopup').classList.remove('show');
+}
+
+// Idle owl talk
+setInterval(() => {
+  if (owlMood === 'idle' && Math.random() < 0.3) {
+    setOwlMood('idle', owlSay(OWL_IDLE));
+  }
+}, 8000);
+
+// ─── SINS ─────────────────────────────────────────────
+function getTotal() { return SINS.reduce((s, sin) => s + (counts[sin.id]||0), 0); }
+function getWeighted() { return SINS.reduce((s, sin) => s + (counts[sin.id]||0) * sin.weight, 0); }
+function getHellPct() { return Math.min(100, Math.round(getWeighted() / 0.6)); }
+function getVerdict(pct) {
+  for (const [lo, hi, v] of VERDICTS) if (pct >= lo && pct <= hi) return v;
+  return VERDICTS[VERDICTS.length-1][2];
+}
+
+function renderSins() {
+  const grid = document.getElementById('sinsGrid');
+  grid.innerHTML = '';
+  SINS.forEach(sin => {
+    const div = document.createElement('div');
+    div.className = 'sin-card';
+    div.id = 'card-'+sin.id;
+    div.innerHTML = `
+      <span class="sin-icon">${sin.icon}</span>
+      <span class="sin-name">${sin.name}</span>
+      <div class="sin-count" id="cnt-${sin.id}">${counts[sin.id]}</div>
+      <div class="sin-btn-row">
+        <button class="btn-minus" onclick="changeSin('${sin.id}',-1,event)">−</button>
+        <button class="btn-plus"  onclick="changeSin('${sin.id}',+1,event)">+</button>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function changeSin(id, delta, e) {
+  e.stopPropagation();
+  counts[id] = Math.max(0, (counts[id]||0) + delta);
+  document.getElementById('cnt-'+id).textContent = counts[id];
+  if (delta > 0) {
+    const card = document.getElementById('card-'+id);
+    card.classList.add('flash');
+    setTimeout(() => card.classList.remove('flash'), 300);
+    spawnParticles(3);
+    setOwlMood('angry', owlSay(OWL_SIN));
+    setTimeout(() => setOwlMood('idle', owlSay(OWL_IDLE)), 3000);
+    showPopup(owlSay(OWL_SIN));
+  }
+  save();
+  renderTotal();
+  renderChart();
+}
+
+function renderTotal() {
+  const t = getTotal();
+  const el = document.getElementById('totalCount');
+  el.textContent = t;
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 300);
+  const msgs = [[0,0,'Начни с чистого листа...'],[1,5,'Небольшие погрешности...'],[6,15,'Уже задумайся о молитве.'],[16,30,'Пора исповедаться.'],[31,50,'Ты идёшь прямо вниз.'],[51,100,'Ад ждёт тебя.'],[101,999,'Дьявол готовит комнату.']];
+  for (const [lo, hi, txt] of msgs) if (t >= lo && t <= hi) { document.getElementById('totalText').textContent = txt; break; }
+}
+
+function renderChart() {
+  const pct = getHellPct();
+  const c = 408.4;
+  document.getElementById('hellArc').style.strokeDashoffset = c - c * pct / 100;
+  document.getElementById('hellPct').textContent = pct + '%';
+  document.getElementById('hellVerdict').textContent = getVerdict(pct);
+  const bc = document.getElementById('barChart');
+  const max = Math.max(1, ...SINS.map(s => counts[s.id]||0));
+  bc.innerHTML = SINS.map(s => {
+    const h = Math.round(((counts[s.id]||0) / max) * 64);
+    return `<div class="bar-wrap"><div class="bar" style="height:${Math.max(2,h)}px"></div><div class="bar-label">${s.icon}</div></div>`;
+  }).join('');
+}
+
+// ─── PRAYERS ──────────────────────────────────────────
+function renderPrayers() {
+  const c = document.getElementById('prayersContainer');
+  c.innerHTML = PRAYERS_DATA.map(p => {
+    const state = prayerState[p.id] || 'idle';
+    const statusText = state === 'idle' ? 'не прочитано' : state === 'reading' ? '📖 читаю...' : '✓ прочитано';
+    const btnText = state === 'done' ? '✓ Прочитано' : state === 'reading' ? 'Читаю...' : 'Читать под надзором';
+    return `<div class="prayer-card ${state === 'reading' ? 'reading' : state === 'done' ? 'done' : ''}" id="pcard-${p.id}">
+      <div class="prayer-header">
+        <span class="prayer-badge">${p.badge}</span>
+        <span class="prayer-status">${statusText}</span>
+      </div>
+      <div class="prayer-text">${p.text}</div>
+      <div class="prayer-name">— ${p.name}</div>
+      <div class="prayer-progress"><div class="prayer-progress-fill" id="pprog-${p.id}"></div></div>
+      <button class="btn-read" onclick="startPrayer('${p.id}')" ${state === 'reading' ? 'disabled' : ''}>${btnText}</button>
+    </div>`;
+  }).join('');
+}
+
+function startPrayer(id) {
+  if (prayerState[id] === 'done') return;
+  if (activeTimer) {
+    // skip previous
+    clearInterval(activeTimer.interval);
+    showPopup(owlSay(OWL_PRAYER_SKIP));
+    setOwlMood('angry', owlSay(OWL_PRAYER_SKIP));
+    setTimeout(() => setOwlMood('idle', owlSay(OWL_IDLE)), 3000);
+    activeTimer = null;
+  }
+
+  prayerState[id] = 'reading';
+  save();
+  renderPrayers();
+
+  const prayer = PRAYERS_DATA.find(p => p.id === id);
+  const total = prayer.secs;
+  let elapsed = 0;
+
+  setOwlMood('idle', owlSay(OWL_PRAYER_START));
+  showPopup(owlSay(OWL_PRAYER_START));
+
+  const fill = document.getElementById('pprog-'+id);
+  const timerFill = document.getElementById('timerFill');
+
+  const interval = setInterval(() => {
+    elapsed++;
+    const pct = Math.min(100, (elapsed / total) * 100);
+    if (fill) fill.style.width = pct + '%';
+    if (timerFill) timerFill.style.width = pct + '%';
+
+    // Owl watches — gets happier as progress goes
+    if (elapsed === Math.floor(total * 0.5)) {
+      setOwlMood('idle', 'Половина пути. Не останавливайся.');
+    }
+
+    if (elapsed >= total) {
+      clearInterval(interval);
+      activeTimer = null;
+      prayerState[id] = 'done';
+      save();
+      renderPrayers();
+      if (timerFill) timerFill.style.width = '0%';
+
+      setOwlMood('happy', owlSay(OWL_PRAYER_DONE));
+      showPopup(owlSay(OWL_PRAYER_DONE));
+      setTimeout(() => setOwlMood('idle', owlSay(OWL_IDLE)), 3000);
+      spawnParticles(2);
+
+      // Check all done
+      const allDone = PRAYERS_DATA.every(p => prayerState[p.id] === 'done');
+      if (allDone) {
+        setTimeout(() => {
+          setOwlMood('happy', owlSay(OWL_ALL_DONE));
+          showPopup(owlSay(OWL_ALL_DONE));
+        }, 2000);
+      }
+    }
+  }, 1000);
+
+  activeTimer = { prayerId: id, interval, elapsed, total };
+}
+
+// ─── PARTICLES ────────────────────────────────────────
+function spawnParticles(n) {
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const x = Math.random() * window.innerWidth;
+      const drift = (Math.random()-0.5)*80 + 'px';
+      p.style.cssText = `left:${x}px; --drift:${drift}; animation-duration:${2+Math.random()*2}s; width:${3+Math.random()*4}px; height:${3+Math.random()*4}px;`;
+      document.getElementById('particles').appendChild(p);
+      setTimeout(() => p.remove(), 4500);
+    }, i * 150);
+  }
+}
+
+setInterval(() => { if (getTotal() > 0) spawnParticles(1); }, 1200);
+
+// ─── RESET ────────────────────────────────────────────
+function resetDay() {
+  if (!confirm('Начать новый день и сбросить всё?')) return;
+  if (activeTimer) { clearInterval(activeTimer.interval); activeTimer = null; }
+  SINS.forEach(s => counts[s.id] = 0);
+  PRAYERS_DATA.forEach(p => prayerState[p.id] = 'idle');
+  save();
+  renderSins();
+  renderTotal();
+  renderChart();
+  renderPrayers();
+  setOwlMood('idle', 'Новый день. Новый шанс не грешить. Хух.');
+}
+
+// ─── INIT ─────────────────────────────────────────────
+document.getElementById('dateDisplay').textContent =
+  new Date().toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
+renderSins();
+renderTotal();
+renderChart();
+renderPrayers();
+
+// Initial owl greeting
+setTimeout(() => showPopup('Здравствуй, грешник. Я слежу за тобой.'), 1200);
+</script>
+</body>
+</html>

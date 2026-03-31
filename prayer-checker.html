@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Сова слушает молитву</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blood:#8b0000;--ember:#c0392b;--gold:#c9a84c;--gold2:#f0d060;
+  --ash:#2d1a0e;--parchment:#1a0a00;--bone:#d4b896;
+  --green:#1a5c1a;--green2:#5dff5d;--red2:#ff5555;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#080300;color:var(--bone);
+  font-family:'Crimson Text',serif;
+  min-height:100vh;padding:20px 16px 50px;
+}
+body::before{
+  content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;
+  background:radial-gradient(ellipse at 50% 100%,rgba(200,50,0,.2),transparent 70%);
+  pointer-events:none;z-index:0;animation:hellglow 3s ease-in-out infinite alternate;
+}
+@keyframes hellglow{from{opacity:.5}to{opacity:1}}
+.wrap{max-width:440px;margin:0 auto;position:relative;z-index:1;}
+
+/* ── HEADER ── */
+h1{
+  font-family:'UnifrakturMaguntia',cursive;font-size:2.2rem;
+  color:var(--blood);text-shadow:0 0 20px rgba(200,0,0,.6);
+  text-align:center;margin-bottom:4px;
+}
+.sub{
+  font-family:'Cinzel',serif;font-size:.62rem;
+  letter-spacing:4px;color:var(--gold);text-transform:uppercase;
+  text-align:center;margin-bottom:18px;
+}
+hr{border:none;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:14px 0;opacity:.35;}
+
+/* ── OWL STAGE ── */
+.owl-stage{
+  display:flex;flex-direction:column;align-items:center;
+  gap:10px;margin-bottom:22px;position:relative;
+}
+.owl-wrap{position:relative;width:130px;height:160px;}
+.owl-svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(200,0,0,.5));}
+
+@keyframes idle   {0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes listen {0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes happy  {0%,100%{transform:rotate(0)scale(1)}30%{transform:rotate(-9deg)scale(1.1)}60%{transform:rotate(9deg)scale(1.1)}}
+@keyframes angry  {0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg)scale(1.05)}75%{transform:rotate(12deg)scale(1.05)}}
+
+.owl-svg.idle   {animation:idle 2.5s ease-in-out infinite;}
+.owl-svg.listen {animation:listen .65s ease-in-out infinite;}
+.owl-svg.happy  {animation:happy .5s ease-in-out 5;}
+.owl-svg.angry  {animation:angry .35s ease-in-out infinite;}
+
+/* sound rings */
+.rings{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.ring{
+  position:absolute;border-radius:50%;
+  border:2px solid rgba(201,168,76,.5);
+  width:130px;height:130px;
+  margin-left:-65px;margin-top:-65px;
+  transform:scale(0);opacity:0;
+}
+.rings.active .ring{animation:ring-pulse 1.4s ease-out infinite;}
+.rings.active .ring:nth-child(2){animation-delay:.46s;}
+.rings.active .ring:nth-child(3){animation-delay:.92s;}
+@keyframes ring-pulse{
+  0%{transform:scale(.4);opacity:.9;}
+  100%{transform:scale(2.2);opacity:0;}
+}
+
+/* speech bubble */
+.bubble{
+  background:linear-gradient(135deg,#0d0500,#1f0a00);
+  border:1px solid rgba(139,0,0,.5);border-radius:12px;
+  padding:12px 16px;width:100%;max-width:340px;
+  font-style:italic;font-size:.92rem;line-height:1.5;
+  color:rgba(212,184,150,.9);text-align:center;
+  transition:all .3s;min-height:52px;
+}
+.bubble.good{border-color:rgba(80,200,80,.5);color:var(--green2);}
+.bubble.bad {border-color:rgba(200,50,50,.6);color:var(--red2);}
+
+/* ── PRAYER CARD ── */
+.prayer-card{
+  background:linear-gradient(135deg,var(--ash),var(--parchment));
+  border:1px solid rgba(139,0,0,.35);border-radius:12px;
+  padding:18px;margin-bottom:16px;
+}
+.prayer-selector{
+  display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;
+}
+.prayer-tab{
+  flex:1;min-width:80px;padding:7px 6px;
+  background:rgba(0,0,0,.3);border:1px solid rgba(139,0,0,.3);
+  border-radius:7px;color:rgba(212,184,150,.5);
+  font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:1px;
+  text-transform:uppercase;cursor:pointer;text-align:center;transition:all .2s;
+}
+.prayer-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1);}
+
+.prayer-title{
+  font-family:'Cinzel',serif;font-size:.75rem;
+  letter-spacing:2px;color:var(--gold);text-transform:uppercase;
+  margin-bottom:10px;
+}
+.prayer-text{
+  font-style:italic;font-size:1rem;line-height:1.75;
+  color:rgba(212,184,150,.85);margin-bottom:16px;
+  letter-spacing:.3px;
+}
+
+/* word highlights */
+.word{
+  display:inline;border-radius:3px;padding:0 2px;
+  transition:all .3s;cursor:default;
+}
+.word.pending  {color:rgba(212,184,150,.5);}
+.word.current  {background:rgba(201,168,76,.25);color:var(--gold2);font-weight:600;
+                box-shadow:0 0 8px rgba(201,168,76,.3);}
+.word.correct  {color:var(--green2);text-decoration:none;}
+.word.wrong    {color:var(--red2);text-decoration:underline wavy var(--red2);}
+
+/* ── PROGRESS BAR ── */
+.prog-wrap{margin-bottom:14px;}
+.prog-label{
+  display:flex;justify-content:space-between;
+  font-family:'Cinzel',serif;font-size:.55rem;
+  letter-spacing:2px;color:rgba(212,184,150,.4);
+  text-transform:uppercase;margin-bottom:6px;
+}
+.prog-bar{height:6px;background:rgba(139,0,0,.2);border-radius:3px;overflow:hidden;}
+.prog-fill{
+  height:100%;width:0%;border-radius:3px;
+  background:linear-gradient(to right,var(--blood),var(--ember));
+  transition:width .4s ease;
+}
+.prog-fill.green{background:linear-gradient(to right,var(--green),var(--green2));}
+
+/* ── SCORE ── */
+.score-row{
+  display:flex;gap:10px;margin-bottom:14px;
+}
+.score-box{
+  flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(139,0,0,.2);
+  border-radius:8px;padding:10px;text-align:center;
+}
+.score-num{
+  font-family:'UnifrakturMaguntia',cursive;font-size:1.8rem;
+  line-height:1;
+}
+.score-num.correct-score{color:var(--green2);text-shadow:0 0 10px rgba(80,255,80,.3);}
+.score-num.wrong-score  {color:var(--red2); text-shadow:0 0 10px rgba(255,80,80,.3);}
+.score-num.pct-score    {color:var(--gold); text-shadow:0 0 10px rgba(201,168,76,.3);}
+.score-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:1px;color:rgba(212,184,150,.4);text-transform:uppercase;margin-top:3px;}
+
+/* ── RECOGNIZED TEXT ── */
+.recognized{
+  background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,.15);
+  border-radius:8px;padding:10px 12px;margin-bottom:14px;
+  font-style:italic;font-size:.82rem;color:rgba(212,184,150,.5);
+  min-height:38px;line-height:1.5;
+}
+.recognized span{color:rgba(212,184,150,.8);}
+
+/* ── BUTTONS ── */
+.btn-listen{
+  display:block;width:100%;padding:16px;
+  background:linear-gradient(135deg,#8b0000,#c0392b);
+  border:none;border-radius:10px;
+  color:#fff;font-family:'Cinzel',serif;
+  font-size:.8rem;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 0 20px rgba(139,0,0,.3);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-listen:active{transform:scale(.97);}
+.btn-listen.listening{
+  background:linear-gradient(135deg,#003300,#006600);
+  box-shadow:0 0 20px rgba(0,200,0,.3);
+  animation:btn-pulse .8s ease-in-out infinite alternate;
+}
+@keyframes btn-pulse{from{box-shadow:0 0 15px rgba(0,200,0,.3)}to{box-shadow:0 0 35px rgba(0,200,0,.6)}}
+.btn-listen.listening::before{content:'⏹ ';}
+.btn-mic-icon{font-size:1.2rem;}
+
+.btn-reset{
+  display:block;width:100%;padding:10px;margin-top:10px;
+  background:transparent;border:1px solid rgba(139,0,0,.3);
+  border-radius:8px;color:rgba(212,184,150,.35);
+  font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:2px;
+  text-transform:uppercase;cursor:pointer;
+}
+.btn-reset:active{background:rgba(139,0,0,.1);color:var(--bone);}
+
+/* ── RESULT BANNER ── */
+.result-banner{
+  display:none;border-radius:10px;padding:16px;
+  text-align:center;margin-bottom:14px;
+}
+.result-banner.show{display:block;}
+.result-banner.pass{background:rgba(0,80,0,.3);border:1px solid rgba(80,200,80,.4);}
+.result-banner.fail{background:rgba(80,0,0,.3);border:1px solid rgba(200,50,50,.4);}
+.result-icon{font-size:2.5rem;margin-bottom:8px;display:block;}
+.result-title{font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.result-title.pass{color:var(--green2);}
+.result-title.fail{color:var(--red2);}
+.result-detail{font-style:italic;font-size:.88rem;color:rgba(212,184,150,.7);line-height:1.5;}
+
+/* ── NO SUPPORT WARNING ── */
+.no-support{
+  background:rgba(100,0,0,.3);border:1px solid var(--blood);
+  border-radius:10px;padding:16px;text-align:center;
+  font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:1px;
+  color:rgba(212,184,150,.7);display:none;
+}
+
+/* particles */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.particle{
+  position:absolute;bottom:-20px;width:4px;height:4px;
+  border-radius:50%;background:#ff4500;opacity:0;
+  animation:float-up linear infinite;box-shadow:0 0 6px #ff4500;
+}
+@keyframes float-up{
+  0%{transform:translateY(0)scale(1);opacity:0;}
+  20%{opacity:.6;}80%{opacity:.3;}
+  100%{transform:translateY(-60vh)translateX(var(--d))scale(.2);opacity:0;}
+}
+</style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<div class="wrap">
+
+  <h1>Сова Слушает</h1>
+  <div class="sub">Читай вслух — сова проверит</div>
+  <hr>
+
+  <!-- OWL -->
+  <div class="owl-stage">
+    <div class="owl-wrap">
+      <div class="rings" id="rings">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+      </div>
+      <svg class="owl-svg idle" id="owlSvg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="85" rx="32" ry="38" fill="#1a2800"/>
+        <ellipse cx="50" cy="88" rx="28" ry="34" fill="#0d1800"/>
+        <ellipse cx="20" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(-15,20,90)"/>
+        <ellipse cx="80" cy="90" rx="14" ry="22" fill="#0f1f00" transform="rotate(15,80,90)"/>
+        <ellipse cx="50" cy="95" rx="18" ry="22" fill="#2d4400"/>
+        <ellipse cx="50" cy="48" rx="26" ry="26" fill="#1a2800"/>
+        <polygon points="28,28 22,8 36,22" fill="#0d1800"/>
+        <polygon points="72,28 78,8 64,22" fill="#0d1800"/>
+        <circle cx="38" cy="48" r="13" fill="#330000" opacity=".8"/>
+        <circle cx="62" cy="48" r="13" fill="#330000" opacity=".8"/>
+        <circle cx="38" cy="48" r="11" fill="#ffeecc"/>
+        <circle cx="62" cy="48" r="11" fill="#ffeecc"/>
+        <!-- eye irises - change color by mood via JS -->
+        <circle cx="38" cy="48" r="7" fill="#cc0000" id="irisL"/>
+        <circle cx="62" cy="48" r="7" fill="#cc0000" id="irisR"/>
+        <circle cx="38" cy="48" r="4" fill="#000" id="pupilL"/>
+        <circle cx="62" cy="48" r="4" fill="#000" id="pupilR"/>
+        <circle cx="40" cy="46" r="1.5" fill="white"/>
+        <circle cx="64" cy="46" r="1.5" fill="white"/>
+        <polygon points="50,54 44,62 56,62" fill="#c9a84c"/>
+        <!-- mouth changes by mood -->
+        <path d="M40,68 Q50,62 60,68" stroke="#0d1800" stroke-width="2.5" fill="none" id="owlMouth"/>
+        <line x1="40" y1="122" x2="30" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="122" x2="38" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="122" x2="46" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="60" y1="122" x2="70" y2="128" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="60" y1="122" x2="62" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="60" y1="122" x2="54" y2="129" stroke="#c9a84c" stroke-width="3" stroke-linecap="round"/>
+        <path d="M46,88 L54,88 M50,84 L50,96" stroke="#8b0000" stroke-width="2.5" opacity=".7"/>
+        <circle cx="38" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity=".4"/>
+        <circle cx="62" cy="48" r="11" fill="none" stroke="#ff0000" stroke-width="1" opacity=".4"/>
+      </svg>
+    </div>
+    <div class="bubble" id="bubble">Выбери молитву и нажми кнопку. Я буду слушать.</div>
+  </div>
+
+  <!-- PRAYER SELECTOR -->
+  <div class="prayer-card">
+    <div class="prayer-selector" id="prayerSelector"></div>
+    <div class="prayer-title" id="prayerTitle">Молитва Иисусова</div>
+
+    <!-- word-by-word highlighted text -->
+    <div class="prayer-text" id="prayerWords"></div>
+
+    <!-- progress -->
+    <div class="prog-wrap">
+      <div class="prog-label">
+        <span>Прогресс</span>
+        <span id="progText">0 / 0 слов</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    </div>
+
+    <!-- scores -->
+    <div class="score-row">
+      <div class="score-box">
+        <div class="score-num correct-score" id="scoreCorrect">0</div>
+        <div class="score-label">Верно</div>
+      </div>
+      <div class="score-box">
+        <div class="score-num wrong-score" id="scoreWrong">0</div>
+        <div class="score-label">Ошибок</div>
+      </div>
+      <div class="score-box">
+        <div class="score-num pct-score" id="scorePct">—</div>
+        <div class="score-label">Точность</div>
+      </div>
+    </div>
+
+    <!-- what owl heard -->
+    <div class="recognized" id="recognized">
+      Сова ещё ничего не слышала...
+    </div>
+
+    <!-- result -->
+    <div class="result-banner" id="resultBanner">
+      <span class="result-icon" id="resultIcon"></span>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-detail" id="resultDetail"></div>
+    </div>
+
+    <!-- main button -->
+    <button class="btn-listen" id="btnListen" onclick="toggleListening()">
+      <span class="btn-mic-icon">🎙️</span>
+      <span id="btnText">Начать чтение</span>
+    </button>
+    <button class="btn-reset" onclick="resetPrayer()">↺ Начать заново</button>
+  </div>
+
+  <div class="no-support" id="noSupport">
+    ⚠️ Распознавание речи не поддерживается в этом браузере.<br>
+    Используй Chrome на Android или десктопе.
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  PRAYERS
+// ═══════════════════════════════════════════
+const PRAYERS = [
+  {
+    id:'p1', name:'Иисусова',
+    text:'Господи Иисусе Христе Сыне Божий помилуй мя грешного',
+  },
+  {
+    id:'p2', name:'Отче наш',
+    text:'Отче наш иже еси на небесех да святится имя Твое да приидет Царствие Твое да будет воля Твоя яко на небеси и на земли хлеб наш насущный даждь нам днесь и остави нам долги наша якоже и мы оставляем должником нашим и не введи нас во искушение но избави нас от лукавого',
+  },
+  {
+    id:'p3', name:'Богородице',
+    text:'Богородице Дево радуйся Благодатная Марие Господь с Тобою благословена Ты в женах и благословен плод чрева Твоего яко Спаса родила еси душ наших',
+  },
+];
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let currentPrayer = 0;
+let words = [];          // {text, norm, state:'pending'|'current'|'correct'|'wrong'}
+let wordIndex = 0;       // which word we expect next
+let correctCount = 0;
+let wrongCount = 0;
+let listening = false;
+let recognition = null;
+let finalTranscript = '';
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+function normalize(w) {
+  return w.toLowerCase()
+    .replace(/[^а-яёa-z]/g,'')
+    .replace(/ё/g,'е');
+}
+
+function loadPrayer(idx) {
+  currentPrayer = idx;
+  const p = PRAYERS[idx];
+  document.getElementById('prayerTitle').textContent = p.name;
+
+  words = p.text.split(' ').map(w => ({
+    text: w,
+    norm: normalize(w),
+    state: 'pending'
+  }));
+  wordIndex = 0; correctCount = 0; wrongCount = 0; finalTranscript = '';
+
+  renderWords(); renderScores(); renderProgress();
+  document.getElementById('recognized').innerHTML = 'Сова ещё ничего не слышала...';
+  hideResult();
+  setOwlMood('idle','Выбрана молитва «'+p.name+'». Нажми кнопку и читай вслух.');
+  stopListening();
+  updateBtn(false);
+  document.getElementById('progFill').classList.remove('green');
+
+  // highlight selector
+  document.querySelectorAll('.prayer-tab').forEach((t,i)=>{
+    t.classList.toggle('active', i===idx);
+  });
+}
+
+function buildSelector() {
+  const sel = document.getElementById('prayerSelector');
+  sel.innerHTML = PRAYERS.map((p,i)=>
+    `<div class="prayer-tab${i===0?' active':''}" onclick="loadPrayer(${i})">${p.name}</div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
+function renderWords() {
+  document.getElementById('prayerWords').innerHTML =
+    words.map((w,i)=>
+      `<span class="word ${w.state}" id="w${i}">${w.text} </span>`
+    ).join('');
+}
+
+function renderScores() {
+  document.getElementById('scoreCorrect').textContent = correctCount;
+  document.getElementById('scoreWrong').textContent   = wrongCount;
+  const total = correctCount + wrongCount;
+  document.getElementById('scorePct').textContent =
+    total > 0 ? Math.round(correctCount/total*100)+'%' : '—';
+}
+
+function renderProgress() {
+  const total = words.length;
+  const done  = correctCount; // only correct words count
+  const pct   = total > 0 ? Math.round(done/total*100) : 0;
+  document.getElementById('progFill').style.width = pct+'%';
+  document.getElementById('progText').textContent = done+' / '+total+' слов';
+}
+
+function setWordState(idx, state) {
+  if(idx >= words.length) return;
+  words[idx].state = state;
+  const el = document.getElementById('w'+idx);
+  if(el) { el.className = 'word '+state; }
+}
+
+// ═══════════════════════════════════════════
+//  OWL MOODS
+// ═══════════════════════════════════════════
+const MOUTHS = {
+  idle:  'M40,68 Q50,62 60,68',
+  listen:'M42,66 Q50,66 58,66',
+  happy: 'M40,64 Q50,72 60,64',
+  angry: 'M40,70 Q50,65 60,70',
+};
+const IRIS_COLORS = {
+  idle:'#cc0000', listen:'#ff8800', happy:'#00cc00', angry:'#ff0000',
+};
+
+function setOwlMood(mood, text) {
+  const svg = document.getElementById('owlSvg');
+  svg.className.baseVal = 'owl-svg '+mood;
+  document.getElementById('owlMouth').setAttribute('d', MOUTHS[mood]||MOUTHS.idle);
+  const c = IRIS_COLORS[mood]||'#cc0000';
+  document.getElementById('irisL').setAttribute('fill',c);
+  document.getElementById('irisR').setAttribute('fill',c);
+  document.getElementById('rings').classList.toggle('active', mood==='listen');
+  if(text) document.getElementById('bubble').textContent = text;
+  document.getElementById('bubble').className = 'bubble'+(mood==='happy'?' good':mood==='angry'?' bad':'');
+}
+
+// ═══════════════════════════════════════════
+//  SPEECH RECOGNITION
+// ═══════════════════════════════════════════
+function checkSpeechSupport() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) {
+    document.getElementById('noSupport').style.display = 'block';
+    document.getElementById('btnListen').disabled = true;
+    document.getElementById('btnListen').textContent = '⚠️ Нет поддержки браузера';
+    return false;
+  }
+  return true;
+}
+
+function setupRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'ru-RU';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 3;
+
+  recognition.onstart = () => {
+    listening = true;
+    updateBtn(true);
+    setOwlMood('listen','Слушаю... Читай вслух, медленно и чётко.');
+    spawnParticles(2);
+  };
+
+  recognition.onresult = (e) => {
+    let interim = '';
+    for(let i = e.resultIndex; i < e.results.length; i++) {
+      const res = e.results[i];
+      if(res.isFinal) {
+        const text = res[0].transcript;
+        finalTranscript += ' ' + text;
+        processTranscript(text);
+      } else {
+        interim += res[0].transcript;
+      }
+    }
+    // show what owl hears in real time
+    const rec = document.getElementById('recognized');
+    rec.innerHTML = '<span>'+(finalTranscript+' '+interim).trim()+'</span>';
+  };
+
+  recognition.onerror = (e) => {
+    if(e.error === 'not-allowed') {
+      setOwlMood('angry','Доступ к микрофону запрещён! Разреши в настройках браузера.');
+      showError('Нет доступа к микрофону. Проверь настройки Chrome.');
+    } else if(e.error === 'no-speech') {
+      setOwlMood('angry','Я ничего не слышу. Говори громче!');
+    } else {
+      setOwlMood('angry','Ошибка: '+e.error);
+    }
+    stopListening();
+  };
+
+  recognition.onend = () => {
+    if(listening) {
+      // auto-restart if we didn't stop manually (Android cuts off)
+      try { recognition.start(); } catch(err){}
+    }
+  };
+}
+
+function processTranscript(text) {
+  // Get all recognized words from this chunk
+  const spokenWords = text.trim().split(/\s+/).map(normalize).filter(Boolean);
+
+  for(const spoken of spokenWords) {
+    if(wordIndex >= words.length) break;
+
+    // Mark current word as "current" highlight
+    setWordState(wordIndex, 'current');
+
+    // Try to match: exact match or fuzzy (within 2 chars edit distance)
+    const expected = words[wordIndex].norm;
+    const match = spoken === expected || editDistance(spoken, expected) <= 2;
+
+    if(match) {
+      setWordState(wordIndex, 'correct');
+      correctCount++;
+      wordIndex++;
+      spawnCorrect();
+
+      // look-ahead: skip current
+      setWordState(wordIndex, 'current');
+
+      // check complete
+      if(wordIndex >= words.length) {
+        finishPrayer();
+        return;
+      }
+    } else {
+      // wrong word — give visual feedback but also try to re-sync
+      // (user might have skipped a word)
+      setWordState(wordIndex, 'wrong');
+      wrongCount++;
+
+      // try to find this spoken word ahead (skip detection)
+      let found = -1;
+      for(let j = wordIndex+1; j < Math.min(wordIndex+4, words.length); j++) {
+        if(spoken === words[j].norm || editDistance(spoken, words[j].norm) <= 1) {
+          found = j; break;
+        }
+      }
+      if(found !== -1) {
+        // mark skipped words as wrong
+        for(let j = wordIndex; j < found; j++) setWordState(j,'wrong');
+        wordIndex = found;
+        setWordState(wordIndex, 'correct');
+        correctCount++; wordIndex++;
+        setWordState(wordIndex, 'current');
+        if(wordIndex >= words.length){ finishPrayer(); return; }
+      } else {
+        wordIndex++; // advance anyway
+        setWordState(wordIndex, 'current');
+      }
+    }
+
+    renderScores(); renderProgress();
+  }
+
+  // Dynamic owl reactions
+  const pct = words.length > 0 ? correctCount/words.length : 0;
+  if(pct > .7 && listening) {
+    setOwlMood('listen','Хорошо читаешь! Продолжай...');
+  } else if(wrongCount > 3 && listening) {
+    setOwlMood('listen','Медленнее. Выговаривай каждое слово.');
+  }
+}
+
+// Levenshtein distance for fuzzy matching
+function editDistance(a, b) {
+  const m=a.length, n=b.length;
+  const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function finishPrayer() {
+  stopListening();
+  renderScores(); renderProgress();
+  document.getElementById('progFill').classList.add('green');
+
+  const total = words.length;
+  const pct   = Math.round(correctCount/total*100);
+  const banner = document.getElementById('resultBanner');
+  banner.classList.remove('pass','fail');
+
+  if(pct >= 70) {
+    banner.classList.add('show','pass');
+    document.getElementById('resultIcon').textContent = '✝';
+    document.getElementById('resultTitle').textContent = 'Молитва засчитана';
+    document.getElementById('resultTitle').className = 'result-title pass';
+    document.getElementById('resultDetail').textContent =
+      'Точность: '+pct+'%. Сова одобряет. '+
+      (pct===100?'Идеальное чтение!':pct>=90?'Почти безупречно.':'Хорошая работа.');
+    setOwlMood('happy','✝ Молитва принята! Точность '+pct+'%. Сова довольна.');
+    spawnParticles(8);
+  } else {
+    banner.classList.add('show','fail');
+    document.getElementById('resultIcon').textContent = '😤';
+    document.getElementById('resultTitle').textContent = 'Недостаточно хорошо';
+    document.getElementById('resultTitle').className = 'result-title fail';
+    document.getElementById('resultDetail').textContent =
+      'Точность: '+pct+'%. Нужно минимум 70%. Читай ещё раз.';
+    setOwlMood('angry','ХУХ. Точность '+pct+'% — это не молитва, это позор. Заново.');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  CONTROLS
+// ═══════════════════════════════════════════
+function toggleListening() {
+  if(!checkSpeechSupport()) return;
+  if(!recognition) setupRecognition();
+
+  if(listening) {
+    stopListening();
+    setOwlMood('idle','Остановлено. Нажми снова чтобы продолжить.');
+  } else {
+    hideResult();
+    // if starting fresh
+    if(wordIndex === 0) {
+      words.forEach((_,i) => setWordState(i,'pending'));
+      correctCount=0; wrongCount=0; finalTranscript='';
+      renderScores(); renderProgress();
+    }
+    setWordState(wordIndex,'current');
+    try { recognition.start(); }
+    catch(e) { setupRecognition(); recognition.start(); }
+  }
+}
+
+function stopListening() {
+  listening = false;
+  updateBtn(false);
+  document.getElementById('rings').classList.remove('active');
+  if(recognition) { try{ recognition.stop(); }catch(e){} }
+}
+
+function updateBtn(isListening) {
+  const btn = document.getElementById('btnListen');
+  btn.classList.toggle('listening', isListening);
+  document.getElementById('btnText').textContent =
+    isListening ? 'Остановить' : 'Начать чтение';
+}
+
+function resetPrayer() {
+  stopListening();
+  loadPrayer(currentPrayer);
+}
+
+function hideResult() {
+  document.getElementById('resultBanner').classList.remove('show','pass','fail');
+}
+
+function showError(msg) {
+  document.getElementById('bubble').textContent = msg;
+  document.getElementById('bubble').className = 'bubble bad';
+}
+
+// ═══════════════════════════════════════════
+//  PARTICLES
+// ═══════════════════════════════════════════
+function spawnParticles(n) {
+  for(let i=0;i<n;i++) setTimeout(()=>{
+    const p=document.createElement('div'); p.className='particle';
+    p.style.cssText=`left:${Math.random()*window.innerWidth}px;--d:${(Math.random()-.5)*80}px;animation-duration:${2+Math.random()*2}s;width:${3+Math.random()*4}px;height:${3+Math.random()*4}px;`;
+    document.getElementById('particles').appendChild(p);
+    setTimeout(()=>p.remove(),4500);
+  },i*120);
+}
+
+function spawnCorrect() {
+  const p=document.createElement('div'); p.className='particle';
+  p.style.cssText=`left:${130+Math.random()*80}px;--d:${(Math.random()-.5)*40}px;animation-duration:1.5s;background:#4aff4a;box-shadow:0 0 6px #4aff4a;width:5px;height:5px;`;
+  document.getElementById('particles').appendChild(p);
+  setTimeout(()=>p.remove(),2000);
+}
+
+// ═══════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════
+checkSpeechSupport();
+buildSelector();
+loadPrayer(0);
+</script>
+</body>
+</html>
